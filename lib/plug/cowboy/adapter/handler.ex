@@ -1,6 +1,6 @@
-defmodule Plug.Adapters.Cowboy2.Handler do
+defmodule Plug.Cowboy.Adapter.Handler do
   @moduledoc false
-  @connection Plug.Adapters.Cowboy2.Conn
+  @connection Plug.Cowboy.Adapter.Conn
   @already_sent {:plug_conn, :sent}
 
   def init(req, {plug, opts}) do

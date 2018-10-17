@@ -1,4 +1,4 @@
-defmodule Plug.Adapters.Cowboy2 do
+defmodule Plug.Cowboy.Adapter do
   @moduledoc """
   Adapter interface to the Cowboy2 webserver.
 
@@ -62,10 +62,10 @@ defmodule Plug.Adapters.Cowboy2 do
   ## Example
 
       # Starts a new interface
-      Plug.Adapters.Cowboy2.http MyPlug, [], port: 80
+      Plug.Cowboy.Adapter.http MyPlug, [], port: 80
 
       # The interface above can be shutdown with
-      Plug.Adapters.Cowboy2.shutdown MyPlug.HTTP
+      Plug.Cowboy.Adapter.shutdown MyPlug.HTTP
 
   """
   @spec http(module(), Keyword.t(), Keyword.t()) ::
@@ -84,7 +84,7 @@ defmodule Plug.Adapters.Cowboy2 do
   ## Example
 
       # Starts a new interface
-      Plug.Adapters.Cowboy2.https MyPlug, [],
+      Plug.Cowboy.Adapter.https MyPlug, [],
         port: 443,
         password: "SECRET",
         otp_app: :my_app,
@@ -93,7 +93,7 @@ defmodule Plug.Adapters.Cowboy2 do
         dhfile: "priv/ssl/dhparam.pem"
 
       # The interface above can be shutdown with
-      Plug.Adapters.Cowboy2.shutdown MyPlug.HTTPS
+      Plug.Cowboy.Adapter.shutdown MyPlug.HTTPS
 
   """
   @spec https(module(), Keyword.t(), Keyword.t()) ::
@@ -138,7 +138,7 @@ defmodule Plug.Adapters.Cowboy2 do
   supervision tree by using this function:
 
       children = [
-        {Plug.Adapters.Cowboy2, scheme: :http, plug: MyApp, options: [port: 4040]}
+        {Plug.Cowboy.Adapter, scheme: :http, plug: MyApp, options: [port: 4040]}
       ]
 
       Supervisor.start_link(children, strategy: :one_for_one)
@@ -204,7 +204,7 @@ defmodule Plug.Adapters.Cowboy2 do
     apply(:cowboy, start, args(scheme, plug, opts, cowboy_options))
   end
 
-  @default_stream_handlers [Plug.Adapters.Cowboy2.Stream]
+  @default_stream_handlers [Plug.Cowboy.Adapter.Stream]
 
   defp set_compress(cowboy_options) do
     compress = Keyword.get(cowboy_options, :compress)
@@ -285,7 +285,7 @@ defmodule Plug.Adapters.Cowboy2 do
 
   defp dispatch_for(plug, opts) do
     opts = plug.init(opts)
-    [{:_, [{:_, Plug.Adapters.Cowboy2.Handler, {plug, opts}}]}]
+    [{:_, [{:_, Plug.Cowboy.Adapter.Handler, {plug, opts}}]}]
   end
 
   defp fail(message) do
@@ -298,7 +298,7 @@ defmodule Plug.Adapters.Cowboy2 do
         :ok
 
       vsn ->
-        raise "you are using Plug.Adapters.Cowboy2 (for Cowboy 2) but your current Cowboy " <>
+        raise "you are using Plug.Cowboy.Adapter (for Cowboy 2) but your current Cowboy " <>
                 "version is #{vsn}. Please update your mix.exs file accordingly"
     end
   end

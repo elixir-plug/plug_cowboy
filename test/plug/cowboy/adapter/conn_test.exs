@@ -1,11 +1,9 @@
-defmodule Plug.Adapters.Cowboy2.ConnTest do
+defmodule Plug.Cowboy.Adapter.ConnTest do
   use ExUnit.Case, async: true
 
   alias Plug.Conn
   import Plug.Conn
   import ExUnit.CaptureLog
-
-  @moduletag :cowboy2
 
   ## Cowboy2 setup for testing
   #
@@ -33,12 +31,12 @@ defmodule Plug.Adapters.Cowboy2.ConnTest do
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:kadabra)
-    {:ok, _pid} = Plug.Adapters.Cowboy2.http(__MODULE__, [], port: 8003)
-    {:ok, _pid} = Plug.Adapters.Cowboy2.https(__MODULE__, [], @https_options)
+    {:ok, _pid} = Plug.Cowboy.Adapter.http(__MODULE__, [], port: 8003)
+    {:ok, _pid} = Plug.Cowboy.Adapter.https(__MODULE__, [], @https_options)
 
     on_exit(fn ->
-      :ok = Plug.Adapters.Cowboy2.shutdown(__MODULE__.HTTP)
-      :ok = Plug.Adapters.Cowboy2.shutdown(__MODULE__.HTTPS)
+      :ok = Plug.Cowboy.Adapter.shutdown(__MODULE__.HTTP)
+      :ok = Plug.Cowboy.Adapter.shutdown(__MODULE__.HTTPS)
     end)
 
     :ok
@@ -83,7 +81,7 @@ defmodule Plug.Adapters.Cowboy2.ConnTest do
   end
 
   def build(%Conn{} = conn) do
-    assert {Plug.Adapters.Cowboy2.Conn, _} = conn.adapter
+    assert {Plug.Cowboy.Adapter.Conn, _} = conn.adapter
     assert conn.path_info == ["build", "foo", "bar"]
     assert conn.query_string == ""
     assert conn.scheme == :http

@@ -1,4 +1,4 @@
-defmodule Plug.Adapters.Cowboy2.Stream do
+defmodule Plug.Cowboy.Adapter.Stream do
   @moduledoc false
 
   require Logger
