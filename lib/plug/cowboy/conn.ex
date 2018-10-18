@@ -1,4 +1,4 @@
-defmodule Plug.Cowboy.Adapter.Conn do
+defmodule Plug.Cowboy.Conn do
   @behaviour Plug.Conn.Adapter
   @moduledoc false
 

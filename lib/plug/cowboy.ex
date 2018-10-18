@@ -1,4 +1,4 @@
-defmodule Plug.Cowboy.Adapter do
+defmodule Plug.Cowboy do
   @moduledoc """
   Adapter interface to the Cowboy2 webserver.
 
@@ -62,10 +62,10 @@ defmodule Plug.Cowboy.Adapter do
   ## Example
 
       # Starts a new interface
-      Plug.Cowboy.Adapter.http MyPlug, [], port: 80
+      Plug.Cowboy.http MyPlug, [], port: 80
 
       # The interface above can be shutdown with
-      Plug.Cowboy.Adapter.shutdown MyPlug.HTTP
+      Plug.Cowboy.shutdown MyPlug.HTTP
 
   """
   @spec http(module(), Keyword.t(), Keyword.t()) ::
@@ -84,7 +84,7 @@ defmodule Plug.Cowboy.Adapter do
   ## Example
 
       # Starts a new interface
-      Plug.Cowboy.Adapter.https MyPlug, [],
+      Plug.Cowboy.https MyPlug, [],
         port: 443,
         password: "SECRET",
         otp_app: :my_app,
@@ -93,7 +93,7 @@ defmodule Plug.Cowboy.Adapter do
         dhfile: "priv/ssl/dhparam.pem"
 
       # The interface above can be shutdown with
-      Plug.Cowboy.Adapter.shutdown MyPlug.HTTPS
+      Plug.Cowboy.shutdown MyPlug.HTTPS
 
   """
   @spec https(module(), Keyword.t(), Keyword.t()) ::
@@ -138,7 +138,7 @@ defmodule Plug.Cowboy.Adapter do
   supervision tree by using this function:
 
       children = [
-        {Plug.Cowboy.Adapter, scheme: :http, plug: MyApp, options: [port: 4040]}
+        {Plug.Cowboy, scheme: :http, plug: MyApp, options: [port: 4040]}
       ]
 
       Supervisor.start_link(children, strategy: :one_for_one)
@@ -202,7 +202,7 @@ defmodule Plug.Cowboy.Adapter do
     apply(:cowboy, start, args(scheme, plug, opts, cowboy_options))
   end
 
-  @default_stream_handlers [Plug.Cowboy.Adapter.Stream]
+  @default_stream_handlers [Plug.Cowboy.Stream]
 
   defp set_compress(cowboy_options) do
     compress = Keyword.get(cowboy_options, :compress)
@@ -283,7 +283,7 @@ defmodule Plug.Cowboy.Adapter do
 
   defp dispatch_for(plug, opts) do
     opts = plug.init(opts)
-    [{:_, [{:_, Plug.Cowboy.Adapter.Handler, {plug, opts}}]}]
+    [{:_, [{:_, Plug.Cowboy.Handler, {plug, opts}}]}]
   end
 
   defp fail(message) do

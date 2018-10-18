@@ -1,4 +1,4 @@
-defmodule Plug.Cowboy.Adapter.ConnTest do
+defmodule Plug.Cowboy.ConnTest do
   use ExUnit.Case, async: true
 
   alias Plug.Conn
@@ -16,27 +16,27 @@ defmodule Plug.Cowboy.Adapter.ConnTest do
 
   @client_ssl_opts [
     verify: :verify_peer,
-    keyfile: Path.expand("../../../fixtures/ssl/client.key", __DIR__),
-    certfile: Path.expand("../../../fixtures/ssl/client.cer", __DIR__),
-    cacertfile: Path.expand("../../../fixtures/ssl/ca.cer", __DIR__)
+    keyfile: Path.expand("../../fixtures/ssl/client.key", __DIR__),
+    certfile: Path.expand("../../fixtures/ssl/client.cer", __DIR__),
+    cacertfile: Path.expand("../../fixtures/ssl/ca.cer", __DIR__)
   ]
   @https_options [
     port: 8004,
     password: "cowboy",
     verify: :verify_peer,
-    keyfile: Path.expand("../../../fixtures/ssl/server.key.enc", __DIR__),
-    certfile: Path.expand("../../../fixtures/ssl/server.cer", __DIR__),
-    cacertfile: Path.expand("../../../fixtures/ssl/ca.cer", __DIR__)
+    keyfile: Path.expand("../../fixtures/ssl/server.key.enc", __DIR__),
+    certfile: Path.expand("../../fixtures/ssl/server.cer", __DIR__),
+    cacertfile: Path.expand("../../fixtures/ssl/ca.cer", __DIR__)
   ]
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:kadabra)
-    {:ok, _pid} = Plug.Cowboy.Adapter.http(__MODULE__, [], port: 8003)
-    {:ok, _pid} = Plug.Cowboy.Adapter.https(__MODULE__, [], @https_options)
+    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 8003)
+    {:ok, _pid} = Plug.Cowboy.https(__MODULE__, [], @https_options)
 
     on_exit(fn ->
-      :ok = Plug.Cowboy.Adapter.shutdown(__MODULE__.HTTP)
-      :ok = Plug.Cowboy.Adapter.shutdown(__MODULE__.HTTPS)
+      :ok = Plug.Cowboy.shutdown(__MODULE__.HTTP)
+      :ok = Plug.Cowboy.shutdown(__MODULE__.HTTPS)
     end)
 
     :ok
@@ -81,7 +81,7 @@ defmodule Plug.Cowboy.Adapter.ConnTest do
   end
 
   def build(%Conn{} = conn) do
-    assert {Plug.Cowboy.Adapter.Conn, _} = conn.adapter
+    assert {Plug.Cowboy.Conn, _} = conn.adapter
     assert conn.path_info == ["build", "foo", "bar"]
     assert conn.query_string == ""
     assert conn.scheme == :http
