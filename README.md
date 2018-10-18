@@ -6,26 +6,24 @@ A Plug Adapter for the Erlang [Cowboy][cowboy] web server.
 
 ## Installation
 
-You can use plug_cowboy in your project by adding the dependency:
+You can use `plug_cowboy` in your project by adding the dependency:
 
 ```elixir
 def deps do
-[
-  {:plug_cowboy, "~> 2.0"},
-]
+  [
+    {:plug_cowboy, "~> 2.0"},
+  ]
 end
 ```
 You can then start the application with:
 
 ```elixir
-Plug.Cowboy.Adapter.http MyPlug, []
+Plug.Cowboy.http MyPlug, []
 ```
-
 
 ## Supervised handlers
 
-The `Plug.Cowboy.Adapter` module can be started as part of a supervision tree
-like so:
+The `Plug.Cowboy` module can be started as part of a supervision tree like so:
 
 ```elixir
 defmodule MyApp do
@@ -38,7 +36,7 @@ defmodule MyApp do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      Plug.Cowboy.Adapters.child_spec(scheme: :http, plug: MyRouter, options: [port: 4001])
+      Plug.Cowboy.child_spec(scheme: :http, plug: MyRouter, options: [port: 4001])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
