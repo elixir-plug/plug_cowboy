@@ -1,3 +1,5 @@
+# This module name must be kept for compatibility reasons
+
 defmodule Plug.Adapters.Cowboy.Conn do
   @behaviour Plug.Conn.Adapter
   @moduledoc false

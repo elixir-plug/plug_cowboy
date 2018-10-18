@@ -1,3 +1,5 @@
+# This module name must be kept for compatibility reasons
+
 defmodule Plug.Adapters.Cowboy.Handler do
   @moduledoc false
   @connection Plug.Adapters.Cowboy.Conn

@@ -1,4 +1,4 @@
-defmodule Plug.Adapters.Translator do
+defmodule Plug.Cowboy.Translator do
   @moduledoc """
   A translator module shared by adapters that ship with Plug.
 
@@ -20,17 +20,6 @@ defmodule Plug.Adapters.Translator do
         {~c"Ranch listener" ++ _, [ref, protocol, pid, reason]}
       ) do
     translate_ranch(min_level, ref, [?\s, ?(, Atom.to_string(protocol), ?)], pid, reason)
-  end
-
-  # cowboy 2 format
-  def translate(
-        min_level,
-        :error,
-        :format,
-        {~c"Ranch listener" ++ _, [ref, conn_pid, stream_id, stream_pid, reason, _]}
-      ) do
-    extra = [" (connection ", inspect(conn_pid), ", stream id ", inspect(stream_id), ?)]
-    translate_ranch(min_level, ref, extra, stream_pid, reason)
   end
 
   def translate(_min_level, _level, _kind, _data) do
