@@ -15,7 +15,7 @@ def deps do
   ]
 end
 ```
-You can then start the application with:
+You can then start the adapter with:
 
 ```elixir
 Plug.Cowboy.http MyPlug, []
@@ -46,6 +46,7 @@ defmodule MyApp do
   end
 end
 ```
+
 ## Contributing
 
 We welcome everyone to contribute to PlugCowboy and help us tackle existing issues!
