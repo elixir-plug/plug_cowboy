@@ -65,7 +65,7 @@ defmodule Plug.Cowboy.Conn do
   end
 
   @impl true
-  def read_req_body(req, opts \\ []) do
+  def read_req_body(req, opts) do
     opts = if is_list(opts), do: :maps.from_list(opts), else: opts
     :cowboy_req.read_body(req, opts)
   end
