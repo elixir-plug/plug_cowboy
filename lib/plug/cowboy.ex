@@ -292,7 +292,7 @@ defmodule Plug.Cowboy do
 
   defp dispatch_for(plug, opts) do
     opts = plug.init(opts)
-    [{:_, [{:_, Plug.Cowboy.Handler, {plug, opts}}]}]
+    [{:_, [{:_, Plug.Adapters.Cowboy.Handler, {plug, opts}}]}]
   end
 
   defp fail(message) do
