@@ -28,6 +28,7 @@ defmodule Plug.Cowboy.Conn do
     }
   end
 
+  @impl true
   def send_resp(req, status, headers, body) do
     headers = to_headers_map(headers)
     status = Integer.to_string(status) <> " " <> Plug.Conn.Status.reason_phrase(status)
@@ -35,6 +36,7 @@ defmodule Plug.Cowboy.Conn do
     {:ok, nil, req}
   end
 
+  @impl true
   def send_file(req, status, headers, path, offset, length) do
     %File.Stat{type: :regular, size: size} = File.stat!(path)
 
@@ -50,25 +52,30 @@ defmodule Plug.Cowboy.Conn do
     {:ok, nil, req}
   end
 
+  @impl true
   def send_chunked(req, status, headers) do
     headers = to_headers_map(headers)
     req = :cowboy_req.stream_reply(status, headers, req)
     {:ok, nil, req}
   end
 
+  @impl true
   def chunk(req, body) do
     :cowboy_req.stream_body(body, :nofin, req)
   end
 
-  def read_req_body(req, opts \\ []) do
+  @impl true
+  def read_req_body(req, opts) do
     opts = if is_list(opts), do: :maps.from_list(opts), else: opts
     :cowboy_req.read_body(req, opts)
   end
 
+  @impl true
   def inform(req, status, headers) do
     :cowboy_req.inform(status, to_headers_map(headers), req)
   end
 
+  @impl true
   def push(req, path, headers) do
     opts =
       case {req.port, req.sock} do
@@ -80,6 +87,7 @@ defmodule Plug.Cowboy.Conn do
     :cowboy_req.push(path, to_headers_map(headers), req, opts)
   end
 
+  @impl true
   def get_peer_data(%{peer: {ip, port}, cert: cert}) do
     %{
       address: ip,
@@ -88,6 +96,7 @@ defmodule Plug.Cowboy.Conn do
     }
   end
 
+  @impl true
   def get_http_protocol(req) do
     :cowboy_req.version(req)
   end
