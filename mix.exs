@@ -25,7 +25,8 @@ defmodule Plug.Cowboy.MixProject do
   # Configuration for the OTP application
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {Plug.Cowboy.Application, []}
     ]
   end
 
