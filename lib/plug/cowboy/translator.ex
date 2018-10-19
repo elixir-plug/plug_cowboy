@@ -1,15 +1,9 @@
 defmodule Plug.Cowboy.Translator do
-  @moduledoc """
-  A translator module for cowboy and ranch.
-  """
-
-  ## Entry point
+  @moduledoc false
 
   @doc """
   The `translate/4` function expected by custom Logger translators.
   """
-
-  # cowboy 2 format
   def translate(
         min_level,
         :error,
@@ -67,8 +61,6 @@ defmodule Plug.Cowboy.Translator do
   end
 
   defp non_500_exception?(_), do: false
-
-  ## Helpers
 
   defp conn_info(_min_level, conn) do
     [server_info(conn), request_info(conn)]

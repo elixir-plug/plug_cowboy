@@ -44,11 +44,16 @@ defmodule Plug.Cowboy do
 
   require Logger
 
+  @doc false
+  def start(_type, _args) do
+    Logger.add_translator({Plug.Cowboy.Translator, :translate})
+    Supervisor.start_link([], strategy: :one_for_one)
+  end
+
   # Made public with @doc false for testing.
   @doc false
   def args(scheme, plug, plug_opts, cowboy_options) do
-    {cowboy_options, non_keyword_options} =
-      Enum.split_with(cowboy_options, &match?({_, _}, &1))
+    {cowboy_options, non_keyword_options} = Enum.split_with(cowboy_options, &match?({_, _}, &1))
 
     cowboy_options
     |> set_compress()
@@ -115,12 +120,13 @@ defmodule Plug.Cowboy do
     :handshake_timeout,
     :max_connections,
     :logger,
-    # special case supported by plug but not ranch
-    :acceptors,
     :num_acceptors,
     :shutdown,
     :socket,
-    :socket_opts
+    :socket_opts,
+
+    # Special cases supported by plug but not ranch
+    :acceptors
   ]
 
   @doc """
