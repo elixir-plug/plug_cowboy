@@ -48,7 +48,7 @@ defmodule Plug.Cowboy do
   @doc false
   def args(scheme, plug, plug_opts, cowboy_options) do
     {cowboy_options, non_keyword_options} =
-      Enum.split_with(cowboy_options, &(is_tuple(&1) and tuple_size(&1) == 2))
+      Enum.split_with(cowboy_options, &match?({_, _}, &1))
 
     cowboy_options
     |> set_compress()
