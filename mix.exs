@@ -1,7 +1,7 @@
 defmodule Plug.Cowboy.MixProject do
   use Mix.Project
 
-  @version "2.0.0-dev"
+  @version "2.0.0"
   @description "A Plug adapter for Cowboy"
 
   def project do
@@ -31,7 +31,7 @@ defmodule Plug.Cowboy.MixProject do
 
   def deps do
     [
-      {:plug, github: "elixir-plug/plug"},
+      {:plug, "~> 1.7"},
       {:cowboy, "~> 2.5"},
       {:ex_doc, "~> 0.19.1", only: :docs},
       {:hackney, "~> 1.2.0", only: :test},
