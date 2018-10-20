@@ -44,7 +44,7 @@ defmodule Plug.Cowboy.MixProject do
       licenses: ["Apache 2"],
       maintainers: ["José Valim", "Gary Rennie"],
       links: %{"GitHub" => "https://github.com/elixir-plug/plug_cowboy"},
-      files: ["lib", "mix.exs", "README.md", "CHANGELOG.md", "src", ".formatter.exs"]
+      files: ["lib", "mix.exs", "README.md", "CHANGELOG.md", ".formatter.exs"]
     }
   end
 end
