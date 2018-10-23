@@ -43,7 +43,7 @@ defmodule Plug.Cowboy.MixProject do
     %{
       licenses: ["Apache 2"],
       maintainers: ["José Valim", "Gary Rennie"],
-      links: %{"GitHub" => "https://github.com/elixir-plug/plug_cowboy"},
+      links: %{"GitHub" => "https://github.com/elixir-plug/plug_cowboy"}
     }
   end
 end
