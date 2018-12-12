@@ -66,8 +66,23 @@ defmodule Plug.Cowboy.Conn do
 
   @impl true
   def read_req_body(req, opts) do
-    opts = if is_list(opts), do: :maps.from_list(opts), else: opts
-    :cowboy_req.read_body(req, opts)
+    length = Keyword.get(opts, :length, 8_000_000)
+    read_length = Keyword.get(opts, :read_length, 1_000_000)
+    read_timeout = Keyword.get(opts, :read_timeout, 15_000)
+
+    opts = %{length: read_length, period: read_timeout}
+    read_req_body(req, opts, length, [])
+  end
+
+  defp read_req_body(req, opts, length, acc) when length > 0 do
+    case :cowboy_req.read_body(req, opts) do
+      {:ok, data, req} -> {:ok, IO.iodata_to_binary([acc | data]), req}
+      {:more, data, req} -> read_req_body(req, opts, length - byte_size(data), [acc | data])
+    end
+  end
+
+  defp read_req_body(req, _opts, _length, acc) do
+    {:more, IO.iodata_to_binary(acc), req}
   end
 
   @impl true
