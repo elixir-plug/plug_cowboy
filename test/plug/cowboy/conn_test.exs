@@ -274,10 +274,20 @@ defmodule Plug.Cowboy.ConnTest do
   end
 
   def read_req_body_partial(conn) do
+    # Read something even with no length
+    assert {:more, body, conn} = read_body(conn, length: 0, read_length: 1_000)
+    assert byte_size(body) > 0
     assert {:more, body, conn} = read_body(conn, length: 5_000, read_length: 1_000)
     assert byte_size(body) > 0
     assert {:more, body, conn} = read_body(conn, length: 20_000, read_length: 1_000)
     assert byte_size(body) > 0
+    assert {:ok, body, conn} = read_body(conn, length: 2_000_000)
+    assert byte_size(body) > 0
+
+    # Once it is over, always returns :ok
+    assert {:ok, "", conn} = read_body(conn, length: 2_000_000)
+    assert {:ok, "", conn} = read_body(conn, length: 0)
+
     resp(conn, 200, "ok")
   end
 
