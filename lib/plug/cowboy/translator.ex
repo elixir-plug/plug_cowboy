@@ -39,7 +39,7 @@ defmodule Plug.Cowboy.Translator do
          " terminated\n",
          conn_info(min_level, conn)
          | Exception.format(:exit, reason, [])
-       ]}
+       ], [crash_reason: reason]}
     end
   end
 
@@ -53,7 +53,7 @@ defmodule Plug.Cowboy.Translator do
        extra,
        " terminated\n"
        | Exception.format(:exit, reason, [])
-     ]}
+     ], [crash_reason: reason]}
   end
 
   defp non_500_exception?({%{__exception__: true} = exception, _}) do
