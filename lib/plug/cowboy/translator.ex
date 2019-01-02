@@ -85,7 +85,7 @@ defmodule Plug.Cowboy.Translator do
   defp path_to_iodata(path, ""), do: path
   defp path_to_iodata(path, qs), do: [path, ??, qs]
 
-  if Version.match?(System.version(), "~> 1.6") do
+  if Version.match?(System.version(), "~> 1.7") do
     defp ok(message, metadata) do
       {:ok, message, metadata}
     end
