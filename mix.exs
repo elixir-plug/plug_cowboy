@@ -1,7 +1,7 @@
 defmodule Plug.Cowboy.MixProject do
   use Mix.Project
 
-  @version "2.0.1"
+  @version "2.0.2"
   @description "A Plug adapter for Cowboy"
 
   def project do

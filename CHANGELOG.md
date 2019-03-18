@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.2
+
+### Enhancements
+
+  * Unwrap Plug.Conn.WrapperError
+  * Include crash_reason as logger metadata
+
 ## v2.0.1
 
 ### Bug fixes
