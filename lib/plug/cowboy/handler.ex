@@ -14,17 +14,8 @@ defmodule Plug.Cowboy.Handler do
 
       {:ok, req, {plug, opts}}
     catch
-      :error, value ->
-        stack = System.stacktrace()
-        exception = Exception.normalize(:error, value, stack)
-        exit({{exception, stack}, {plug, :call, [conn, opts]}})
-
-      :throw, value ->
-        stack = System.stacktrace()
-        exit({{{:nocatch, value}, stack}, {plug, :call, [conn, opts]}})
-
-      :exit, value ->
-        exit({value, {plug, :call, [conn, opts]}})
+      kind, reason ->
+        exit_on_error(kind, reason, System.stacktrace(), {plug, :call, [conn, opts]})
     after
       receive do
         @already_sent -> :ok
@@ -32,6 +23,28 @@ defmodule Plug.Cowboy.Handler do
         0 -> :ok
       end
     end
+  end
+
+  defp exit_on_error(
+         :error,
+         %Plug.Conn.WrapperError{kind: kind, reason: reason, stack: stack},
+         _stack,
+         call
+       ) do
+    exit_on_error(kind, reason, stack, call)
+  end
+
+  defp exit_on_error(:error, value, stack, call) do
+    exception = Exception.normalize(:error, value, stack)
+    exit({{exception, stack}, call})
+  end
+
+  defp exit_on_error(:throw, value, stack, call) do
+    exit({{{:nocatch, value}, stack}, call})
+  end
+
+  defp exit_on_error(:exit, value, _stack, call) do
+    exit({value, call})
   end
 
   defp maybe_send(%Plug.Conn{state: :unset}, _plug), do: raise(Plug.Conn.NotSentError)
