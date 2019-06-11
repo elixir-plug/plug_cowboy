@@ -111,10 +111,18 @@ defmodule Plug.Cowboy do
   @doc """
   Shutdowns the given reference.
   """
-  @spec shutdown(reference(), Keyword.t()) :: :ok | {:error, term}
+  @spec shutdown(module(), Keyword.t()) :: :ok | {:error, term}
   def shutdown(ref, opts \\ []) do
-    timeout = Keyword.get(opts, :timeout, 1_000)
+    timeout = Keyword.get(opts, :timeout, 0)
 
+    do_shutdown(ref, timeout)
+  end
+
+  defp do_shutdown(ref, 0) do
+    :cowboy.stop_listener(ref)
+  end
+
+  defp do_shutdown(ref, timeout) do
     with :ok <- :ranch.suspend_listener(ref) do
       :ranch.wait_for_connections(ref, :==, 0, timeout)
     end
