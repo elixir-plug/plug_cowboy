@@ -22,8 +22,8 @@ defmodule Plug.Cowboy.ListenerTest do
       options = [
         port: 4040,
         password: "cowboy",
-        keyfile: Path.expand("../../fixtures/ssl/server.key", __DIR__),
-        certfile: Path.expand("../../fixtures/ssl/server.cer", __DIR__)
+        keyfile: Path.expand("../../fixtures/ssl/server_key_enc.pem", __DIR__),
+        certfile: Path.expand("../../fixtures/ssl/valid.pem", __DIR__)
       ]
 
       child_spec = child_spec(scheme: :https, plug: {__MODULE__, []}, options: options)
