@@ -27,6 +27,9 @@ defmodule Plug.Cowboy do
     * `:timeout` - Time in ms with no requests before Cowboy closes the connection.
       Defaults to 5000ms.
 
+    * `:drain_timeout` - Time in ms to wait for connections to drain during shutdown.
+      Defaults to 1000ms.
+
     * `:protocol_options` - Specifies remaining protocol options,
       see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
 
@@ -108,15 +111,27 @@ defmodule Plug.Cowboy do
     run(:https, plug, opts, cowboy_options)
   end
 
+  @doc false
+  @spec drain(module(), Keyword.t()) :: :ok | {:error, term}
+  def drain(ref, opts \\ []) do
+    timeout = Keyword.get(opts, :drain_timeout, 1_000)
+
+    with :ok <- :ranch.suspend_listener(ref) do
+      :ranch.wait_for_connections(ref, :==, 0, timeout)
+    end
+  end
+
   @doc """
   Shutdowns the given reference.
+
+  ## Options
+
+    * `:drain_timeout` - Time in ms to wait for connections to drain during shutdown.
+      Defaults to 1000ms.
   """
   @spec shutdown(module(), Keyword.t()) :: :ok | {:error, term}
   def shutdown(ref, opts \\ []) do
-    timeout = Keyword.get(opts, :timeout, 1_000)
-
-    with :ok <- :ranch.suspend_listener(ref),
-         :ok <- :ranch.wait_for_connections(ref, :==, 0, timeout) do
+    with :ok <- drain(ref, opts) do
       :cowboy.stop_listener(ref)
     end
   end
@@ -156,40 +171,7 @@ defmodule Plug.Cowboy do
       Supervisor.start_link(children, strategy: :one_for_one)
 
   """
-  def child_spec(opts) do
-    scheme = Keyword.fetch!(opts, :scheme)
-    cowboy_opts = Keyword.get(opts, :options, [])
-
-    {plug, plug_opts} =
-      case Keyword.fetch!(opts, :plug) do
-        {_, _} = tuple -> tuple
-        plug -> {plug, []}
-      end
-
-    cowboy_args = args(scheme, plug, plug_opts, cowboy_opts)
-    [ref, transport_opts, proto_opts] = cowboy_args
-
-    {ranch_module, cowboy_protocol, transport_opts} =
-      case scheme do
-        :http ->
-          {:ranch_tcp, :cowboy_clear, transport_opts}
-
-        :https ->
-          %{socket_opts: socket_opts} = transport_opts
-
-          socket_opts =
-            socket_opts
-            |> Keyword.put_new(:next_protocols_advertised, ["h2", "http/1.1"])
-            |> Keyword.put_new(:alpn_preferred_protocols, ["h2", "http/1.1"])
-
-          {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: socket_opts}}
-      end
-
-    {id, start, restart, shutdown, type, modules} =
-      :ranch.child_spec(ref, ranch_module, transport_opts, cowboy_protocol, proto_opts)
-
-    %{id: id, start: start, restart: restart, shutdown: shutdown, type: type, modules: modules}
-  end
+  defdelegate child_spec(opts), to: __MODULE__.Supervisor
 
   ## Helpers
 
@@ -289,7 +271,8 @@ defmodule Plug.Cowboy do
     [ref || build_ref(plug, scheme), transport_options, protocol_options]
   end
 
-  defp build_ref(plug, scheme) do
+  @doc false
+  def build_ref(plug, scheme) do
     Module.concat(plug, scheme |> to_string |> String.upcase())
   end
 

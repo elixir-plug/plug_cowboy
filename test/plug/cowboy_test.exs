@@ -16,12 +16,12 @@ defmodule Plug.CowboyTest do
       spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, options: [port: 4040]]}
 
       assert %{
-               id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-               modules: [:ranch_listener_sup],
+               id: {Plug.CowboyTest.HTTP, Plug.Cowboy.Supervisor},
+               start: {Plug.Cowboy.Supervisor, :start_link, _},
                restart: :permanent,
                shutdown: :infinity,
-               start: {:ranch_listener_sup, :start_link, _},
-               type: :supervisor
+               type: :supervisor,
+               modules: [Plug.Cowboy.Supervisor]
              } = Supervisor.child_spec(spec, [])
     end
 
@@ -170,16 +170,5 @@ defmodule Plug.CowboyTest do
              %{num_acceptors: 100, max_connections: 16_384, socket_opts: [:inet6, port: 3000]},
              %{env: %{dispatch: @dispatch}}
            ] = args(:http, __MODULE__, [], [:inet6, port: 3000])
-  end
-
-  test "builds child specs" do
-    assert %{
-             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-             modules: [:ranch_listener_sup],
-             start: {:ranch_listener_sup, :start_link, _},
-             restart: :permanent,
-             shutdown: :infinity,
-             type: :supervisor
-           } = child_spec(scheme: :http, plug: __MODULE__, options: [])
   end
 end
