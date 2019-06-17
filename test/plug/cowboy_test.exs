@@ -24,11 +24,6 @@ defmodule Plug.CowboyTest do
                modules: [Plug.Cowboy.Supervisor]
              } = Supervisor.child_spec(spec, [])
     end
-
-    test "supervisor starts correctly" do
-      spec = {Plug.Cowboy, scheme: :http, plug: __MODULE__, options: [port: 8005]}
-      assert {:ok, _} = start_supervised(spec)
-    end
   end
 
   test "builds args for cowboy dispatch" do

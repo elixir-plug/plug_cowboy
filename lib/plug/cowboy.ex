@@ -28,6 +28,9 @@ defmodule Plug.Cowboy do
       Defaults to 5000ms.
 
     * `:drain_timeout` - Time in ms to wait for connections to drain during shutdown.
+      Defaults to 5000ms.
+
+    * `:drain_check_interval` - Time in ms between checks to see if connections have drained.
       Defaults to 1000ms.
 
     * `:protocol_options` - Specifies remaining protocol options,
@@ -114,10 +117,10 @@ defmodule Plug.Cowboy do
   @doc false
   @spec drain(module(), Keyword.t()) :: :ok | {:error, term}
   def drain(ref, opts \\ []) do
-    timeout = Keyword.get(opts, :drain_timeout, 1_000)
+    interval = Keyword.get(opts, :drain_check_interval, 1_000)
 
     with :ok <- :ranch.suspend_listener(ref) do
-      :ranch.wait_for_connections(ref, :==, 0, timeout)
+      :ranch.wait_for_connections(ref, :==, 0, interval)
     end
   end
 
@@ -126,7 +129,7 @@ defmodule Plug.Cowboy do
 
   ## Options
 
-    * `:drain_timeout` - Time in ms to wait for connections to drain during shutdown.
+    * `:drain_check_interval` - Time in ms between checks to see if connections have drained.
       Defaults to 1000ms.
   """
   @spec shutdown(module(), Keyword.t()) :: :ok | {:error, term}

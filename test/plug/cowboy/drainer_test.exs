@@ -7,9 +7,9 @@ defmodule Plug.Cowboy.DrainerTest do
              id: {Plug.Cowboy.DrainerTest, Plug.Cowboy.Drainer},
              modules: [Plug.Cowboy.Drainer],
              restart: :permanent,
-             shutdown: :infinity,
-             start: {Plug.Cowboy.Drainer, :start_link, [{Plug.Cowboy.DrainerTest, 1000}]},
+             shutdown: 2000,
+             start: {Plug.Cowboy.Drainer, :start_link, [{Plug.Cowboy.DrainerTest, 20}]},
              type: :worker
-           } = child_spec(ref: __MODULE__)
+           } == child_spec(options: [ref: __MODULE__, drain_timeout: 2000, drain_check_interval: 20])
   end
 end

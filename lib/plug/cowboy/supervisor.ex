@@ -13,12 +13,13 @@ defmodule Plug.Cowboy.Supervisor do
         plug -> {plug, []}
       end
 
-    ref = Keyword.get(opts, :ref, Plug.Cowboy.build_ref(plug, scheme))
+    ref = get_in(opts, [:options, :ref]) || Plug.Cowboy.build_ref(plug, scheme)
 
     opts =
       opts
       |> Keyword.put(:plug, plug_tuple)
-      |> Keyword.put(:ref, ref)
+      |> Keyword.put_new(:options, [])
+      |> put_in([:options, :ref], ref)
 
     %{
       id: {ref, __MODULE__},
