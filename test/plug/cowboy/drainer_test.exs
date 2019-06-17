@@ -10,6 +10,7 @@ defmodule Plug.Cowboy.DrainerTest do
              shutdown: 2000,
              start: {Plug.Cowboy.Drainer, :start_link, [{Plug.Cowboy.DrainerTest, 20}]},
              type: :worker
-           } == child_spec(options: [ref: __MODULE__, drain_timeout: 2000, drain_check_interval: 20])
+           } ==
+             child_spec(options: [ref: __MODULE__, drain_timeout: 2000, drain_check_interval: 20])
   end
 end

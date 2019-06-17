@@ -5,6 +5,7 @@ defmodule Plug.Cowboy.Listener do
   def child_spec(opts) do
     scheme = Keyword.fetch!(opts, :scheme)
     {plug, plug_opts} = Keyword.fetch!(opts, :plug)
+
     cowboy_opts =
       opts
       |> Keyword.get(:options, [])
