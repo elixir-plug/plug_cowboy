@@ -52,7 +52,7 @@ defmodule Plug.Cowboy.SupervisorTest do
     assert suspended_timestamp < complete_request_timestamp
     assert open_request_timestamp < complete_request_timestamp
     assert complete_request_timestamp < drained_requests_timestamp
-    assert drained_requests_timestamp < complete_shutdown_timestamp
+    assert complete_request_timestamp < complete_shutdown_timestamp
   end
 
   defp observe_state_changes() do
