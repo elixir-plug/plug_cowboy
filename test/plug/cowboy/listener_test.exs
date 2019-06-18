@@ -17,7 +17,6 @@ defmodule Plug.Cowboy.ListenerTest do
            } = child_spec(scheme: :http, plug: {__MODULE__, []}, options: [])
   end
 
-
   test "the h2 alpn settings are added when using https" do
     options = [
       port: 4040,
@@ -30,12 +29,12 @@ defmodule Plug.Cowboy.ListenerTest do
     %{start: {:ranch_listener_sup, :start_link, opts}} = child_spec
 
     assert [
-              Plug.Cowboy.ListenerTest.HTTPS,
-              :ranch_ssl,
-              %{socket_opts: socket_opts},
-              :cowboy_tls,
-              _proto_opts
-            ] = opts
+             Plug.Cowboy.ListenerTest.HTTPS,
+             :ranch_ssl,
+             %{socket_opts: socket_opts},
+             :cowboy_tls,
+             _proto_opts
+           ] = opts
 
     assert Keyword.get(socket_opts, :alpn_preferred_protocols) == ["h2", "http/1.1"]
     assert Keyword.get(socket_opts, :next_protocols_advertised) == ["h2", "http/1.1"]
