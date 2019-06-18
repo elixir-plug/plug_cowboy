@@ -11,19 +11,17 @@ defmodule Plug.CowboyTest do
   handler = {:_, [], Plug.Cowboy.Handler, {Plug.CowboyTest, [foo: :bar]}}
   @dispatch [{:_, [], [handler]}]
 
-  if function_exported?(Supervisor, :child_spec, 2) do
-    test "supports Elixir v1.5 child specs" do
-      spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, options: [port: 4040]]}
+  test "supports Elixir v1.5 child specs" do
+    spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, options: [port: 4040]]}
 
-      assert %{
-               id: {Plug.CowboyTest.HTTP, Plug.Cowboy.Supervisor},
-               start: {Plug.Cowboy.Supervisor, :start_link, _},
-               restart: :permanent,
-               shutdown: :infinity,
-               type: :supervisor,
-               modules: [Plug.Cowboy.Supervisor]
-             } = Supervisor.child_spec(spec, [])
-    end
+    assert %{
+              id: {Plug.CowboyTest.HTTP, Plug.Cowboy.Supervisor},
+              start: {Plug.Cowboy.Supervisor, :start_link, _},
+              restart: :permanent,
+              shutdown: :infinity,
+              type: :supervisor,
+              modules: [Plug.Cowboy.Supervisor]
+            } = Supervisor.child_spec(spec, [])
   end
 
   test "builds args for cowboy dispatch" do
