@@ -27,10 +27,12 @@ defmodule Plug.Cowboy do
     * `:timeout` - Time in ms with no requests before Cowboy closes the connection.
       Defaults to 5000ms.
 
-    * `:drain_timeout` - Time in ms to wait for connections to drain during shutdown.
+    * `:drain_timeout` - Time in ms to wait for connections to drain during shutdown. This option
+      only applies when starting cowboy in a supervision tree.
       Defaults to 5000ms.
 
-    * `:drain_check_interval` - Time in ms between checks to see if connections have drained.
+    * `:drain_check_interval` - Time in ms between checks to see if connections have drained. This
+      option only applies when starting cowboy in a supervision tree.
       Defaults to 1000ms.
 
     * `:protocol_options` - Specifies remaining protocol options,
@@ -126,6 +128,9 @@ defmodule Plug.Cowboy do
 
   @doc """
   Shutdowns the given reference.
+
+  Use this when starting cowboy via `http/3` or `https/3`. If starting cowboy in a supervision tree
+  use `GenServer.stop/3` or `Supervisor.terminate_child/2` to shutdown the process.
 
   ## Options
 
@@ -235,7 +240,7 @@ defmodule Plug.Cowboy do
   end
 
   defp to_args(opts, scheme, plug, plug_opts, non_keyword_opts) do
-    opts = Keyword.delete(opts, :otp_app)
+    opts = Keyword.drop(opts, [:otp_app, :drain_timeout, :drain_check_interval])
     {ref, opts} = Keyword.pop(opts, :ref)
     {dispatch, opts} = Keyword.pop(opts, :dispatch)
     {protocol_options, opts} = Keyword.pop(opts, :protocol_options, [])

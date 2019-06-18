@@ -5,12 +5,7 @@ defmodule Plug.Cowboy.Listener do
   def child_spec(opts) do
     scheme = Keyword.fetch!(opts, :scheme)
     {plug, plug_opts} = Keyword.fetch!(opts, :plug)
-
-    cowboy_opts =
-      opts
-      |> Keyword.get(:options, [])
-      |> Keyword.delete(:drain_timeout)
-      |> Keyword.delete(:drain_check_interval)
+    cowboy_opts = Keyword.get(opts, :options, [])
 
     cowboy_args = Plug.Cowboy.args(scheme, plug, plug_opts, cowboy_opts)
     [ref, transport_opts, proto_opts] = cowboy_args
