@@ -18,7 +18,7 @@ defmodule Plug.Cowboy.ConnTest do
     verify: :verify_peer,
     keyfile: Path.expand("../../fixtures/ssl/client_key.pem", __DIR__),
     certfile: Path.expand("../../fixtures/ssl/client.pem", __DIR__),
-    cacertfile: Path.expand("../../fixtures/ssl/cacerts.pem", __DIR__)
+    cacertfile: Path.expand("../../fixtures/ssl/ca_and_chain.pem", __DIR__)
   ]
   @https_options [
     port: 8004,
