@@ -16,17 +16,17 @@ defmodule Plug.Cowboy.ConnTest do
 
   @client_ssl_opts [
     verify: :verify_peer,
-    keyfile: Path.expand("../../fixtures/ssl/client.key", __DIR__),
-    certfile: Path.expand("../../fixtures/ssl/client.cer", __DIR__),
-    cacertfile: Path.expand("../../fixtures/ssl/ca.cer", __DIR__)
+    keyfile: Path.expand("../../fixtures/ssl/client_key.pem", __DIR__),
+    certfile: Path.expand("../../fixtures/ssl/client.pem", __DIR__),
+    cacertfile: Path.expand("../../fixtures/ssl/ca_and_chain.pem", __DIR__)
   ]
   @https_options [
     port: 8004,
     password: "cowboy",
     verify: :verify_peer,
-    keyfile: Path.expand("../../fixtures/ssl/server.key.enc", __DIR__),
-    certfile: Path.expand("../../fixtures/ssl/server.cer", __DIR__),
-    cacertfile: Path.expand("../../fixtures/ssl/ca.cer", __DIR__)
+    keyfile: Path.expand("../../fixtures/ssl/server_key_enc.pem", __DIR__),
+    certfile: Path.expand("../../fixtures/ssl/valid.pem", __DIR__),
+    cacertfile: Path.expand("../../fixtures/ssl/ca_and_chain.pem", __DIR__)
   ]
 
   setup_all do
