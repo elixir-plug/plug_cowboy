@@ -1,6 +1,27 @@
 defmodule Plug.Cowboy.Drainer do
+  @moduledoc """
+  TODO: description
+  """
   use GenServer
 
+  @doc """
+  TODO: description
+
+  ## Options
+
+    * `:id` - The ID for the process.
+      Defaults to `Plug.Cowboy.Drainer`.
+
+    * `:shutdown` - How long to wait for connections to drain.
+      Defaults to 5000ms.
+
+    * `:refs` - The cowboy listener refs to drain connections for.
+      Defaults to all cowboy listeners.
+
+    * `:drain_check_interval` - How frequently to check if a listener's
+      connections have been drained.
+      Defaults to 1000ms.
+  """
   @spec child_spec(opts :: Keyword.t()) :: Supervisor.child_spec()
   def child_spec(opts) when is_list(opts) do
     {spec_opts, opts} = Keyword.split(opts, [:id, :shutdown])
