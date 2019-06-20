@@ -3,7 +3,7 @@ defmodule Plug.Cowboy.Drainer do
 
   @spec child_spec(opts :: Keyword.t()) :: Supervisor.child_spec()
   def child_spec(opts) when is_list(opts) do
-    {opts, shutdown} = Keyword.pop(opts, :shutdown, 5_000)
+    {spec_opts, opts} = Keyword.split(opts, [:id, :shutdown])
 
     Supervisor.child_spec(
       %{
@@ -11,7 +11,7 @@ defmodule Plug.Cowboy.Drainer do
         start: {__MODULE__, :start_link, [opts]},
         type: :worker
       },
-      shutdown: shutdown
+      spec_opts
     )
   end
 
