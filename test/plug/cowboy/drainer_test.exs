@@ -74,6 +74,18 @@ defmodule Plug.Cowboy.DrainerTest do
     end)
   end
 
+  test "raises when refs are not specified" do
+    assert_raise KeyError, fn ->
+      Plug.Cowboy.Drainer.start_link([])
+    end
+  end
+
+  test "raises when refs is not an expected argument type" do
+    assert_raise ArgumentError, fn ->
+      Plug.Cowboy.Drainer.start_link(refs: 1)
+    end
+  end
+
   defp observe_slow_request() do
     this = __MODULE__
 

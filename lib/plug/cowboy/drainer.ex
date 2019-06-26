@@ -1,6 +1,6 @@
 defmodule Plug.Cowboy.Drainer do
   @moduledoc """
-  GenServer to drain cowboy connections at shutdown.
+  Process to drain cowboy connections at shutdown.
 
   When starting `Plug.Cowboy` in a supervision tree, it will create a listener that receives
   requests and creates a connection process to handle that request. During shutdown, a
@@ -8,11 +8,13 @@ defmodule Plug.Cowboy.Drainer do
   that are still being served. In most cases, it is desireable to allow connections to
   complete before shutting down.
 
-  This module provides a GenServer that during shutdown will close listeners and wait
+  This module provides a process that during shutdown will close listeners and wait
   for connections to complete. It should be placed after other supervised processes that
   handle cowboy connections.
 
   ## Options
+
+  The following options can be given to the child spec:
 
     * `:refs` - A list of refs to drain. `:all` is also supported and will drain all cowboy
       listeners, including those started by means other than `Plug.Cowboy`.
@@ -29,20 +31,16 @@ defmodule Plug.Cowboy.Drainer do
 
   ## Examples
 
-      defmodule Hello.Application do
-        use Application
-        def start(_type, _args) do
-          ...
+      # In your application
+      def start(_type, _args) do
+        children = [
+          {Plug.Cowboy, scheme: :http, plug: MyApp, options: [port: 4040]},
+          {Plug.Cowboy, scheme: :https, plug: MyApp, options: [port: 4041]},
+          {Plug.Cowboy.Drainer, refs: [MyApp.HTTP, MyApp.HTTPS]}
+        ]
 
-          children = [
-            {Plug.Cowboy, scheme: :http, plug: MyApp, options: [port: 4040]},
-            {Plug.Cowboy, scheme: :https, plug: MyApp, options: [port: 4041]},
-            {Plug.Cowboy.Drainer, refs: [MyApp.HTTP, MyApp.HTTPS]}
-          ]
-
-          opts = [strategy: :one_for_one, name: Hello.Supervisor]
-          Supervisor.start_link(children, opts)
-        end
+        opts = [strategy: :one_for_one, name: Hello.Supervisor]
+        Supervisor.start_link(children, opts)
       end
   """
   use GenServer
@@ -64,7 +62,10 @@ defmodule Plug.Cowboy.Drainer do
 
   @doc false
   def start_link(opts) do
-    Keyword.fetch!(opts, :refs)
+    opts
+    |> Keyword.fetch!(:refs)
+    |> validate_refs!()
+
     GenServer.start_link(__MODULE__, opts)
   end
 
@@ -91,16 +92,22 @@ defmodule Plug.Cowboy.Drainer do
 
   defp drain(refs, drain_check_interval) do
     refs
-    |> Stream.each(&suspend/1)
-    |> Enum.filter(&suspended?/1)
+    |> Stream.each(&:ranch.suspend_listener/1)
+    |> Stream.filter(&suspended?/1)
     |> Enum.each(&wait_for_connections(&1, drain_check_interval))
   end
-
-  defp suspend(ref), do: :ranch.suspend_listener(ref)
 
   defp suspended?(ref), do: :ranch.get_status(ref) == :suspended
 
   defp wait_for_connections(ref, drain_check_interval) do
     :ranch.wait_for_connections(ref, :==, 0, drain_check_interval)
+  end
+
+  defp validate_refs!(:all), do: :ok
+  defp validate_refs!(refs) when is_list(refs), do: :ok
+
+  defp validate_refs!(refs) do
+    raise ArgumentError,
+          ":refs should be :all or a list of references, instead got:\n#{inspect(refs)}"
   end
 end
