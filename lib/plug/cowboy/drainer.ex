@@ -12,6 +12,23 @@ defmodule Plug.Cowboy.Drainer do
   for connections to complete. It should be placed after other supervised processes that
   handle cowboy connections.
 
+  ## Options
+
+    * `:refs` - A list of refs to drain. `:all` is also supported and will drain all cowboy
+      listeners, including those started by means other than `Plug.Cowboy`.
+
+    * `:id` - The ID for the process.
+      Defaults to `Plug.Cowboy.Drainer`.
+
+    * `:shutdown` - How long to wait for connections to drain.
+      Defaults to 5000ms.
+
+    * `:drain_check_interval` - How frequently to check if a listener's
+      connections have been drained.
+      Defaults to 1000ms.
+
+  ## Examples
+
       defmodule Hello.Application do
         use Application
         def start(_type, _args) do
@@ -27,21 +44,6 @@ defmodule Plug.Cowboy.Drainer do
           Supervisor.start_link(children, opts)
         end
       end
-
-  ## Options
-
-    * `:refs` - A list of refs to drain. `:all` is also supported and will drain all cowboy
-      listeners, including those started by means other than `Plug.Cowboy`.
-
-    * `:id` - The ID for the process.
-      Defaults to `Plug.Cowboy.Drainer`.
-
-    * `:shutdown` - How long to wait for connections to drain.
-      Defaults to 5000ms.
-
-    * `:drain_check_interval` - How frequently to check if a listener's
-      connections have been drained.
-      Defaults to 1000ms.
   """
   use GenServer
 
