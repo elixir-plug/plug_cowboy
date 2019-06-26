@@ -49,7 +49,6 @@ defmodule Plug.Cowboy.Drainer do
   @spec child_spec(opts :: Keyword.t()) :: Supervisor.child_spec()
   def child_spec(opts) when is_list(opts) do
     {spec_opts, opts} = Keyword.split(opts, [:id, :shutdown])
-    Keyword.fetch!(opts, :refs)
 
     Supervisor.child_spec(
       %{
@@ -63,6 +62,7 @@ defmodule Plug.Cowboy.Drainer do
 
   @doc false
   def start_link(opts) do
+    Keyword.fetch!(opts, :refs)
     GenServer.start_link(__MODULE__, opts)
   end
 
