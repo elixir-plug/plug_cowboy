@@ -80,7 +80,7 @@ defmodule Plug.Cowboy.Drainer do
   @impl true
   def terminate(_reason, opts) do
     opts
-    |> Keyword.get(:refs)
+    |> Keyword.fetch!(:refs)
     |> drain(Keyword.get(opts, :drain_check_interval, 1_000))
   end
 
@@ -92,12 +92,18 @@ defmodule Plug.Cowboy.Drainer do
 
   defp drain(refs, drain_check_interval) do
     refs
-    |> Stream.each(&:ranch.suspend_listener/1)
-    |> Stream.filter(&suspended?/1)
+    |> Enum.filter(&suspend_listener/1)
     |> Enum.each(&wait_for_connections(&1, drain_check_interval))
   end
 
-  defp suspended?(ref), do: :ranch.get_status(ref) == :suspended
+  defp suspend_listener(ref) do
+    ref
+    |> :ranch.suspend_listener()
+    |> case do
+      :ok -> true
+      _ -> false
+    end
+  end
 
   defp wait_for_connections(ref, drain_check_interval) do
     :ranch.wait_for_connections(ref, :==, 0, drain_check_interval)
@@ -108,6 +114,6 @@ defmodule Plug.Cowboy.Drainer do
 
   defp validate_refs!(refs) do
     raise ArgumentError,
-          ":refs should be :all or a list of references, instead got:\n#{inspect(refs)}"
+          ":refs should be :all or a list of references, got: #{inspect(refs)}"
   end
 end
