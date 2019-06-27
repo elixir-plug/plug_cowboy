@@ -97,12 +97,7 @@ defmodule Plug.Cowboy.Drainer do
   end
 
   defp suspend_listener(ref) do
-    ref
-    |> :ranch.suspend_listener()
-    |> case do
-      :ok -> true
-      _ -> false
-    end
+    :ranch.suspend_listener(ref) == :ok
   end
 
   defp wait_for_connections(ref, drain_check_interval) do
