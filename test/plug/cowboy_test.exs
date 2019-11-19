@@ -86,8 +86,8 @@ defmodule Plug.CowboyTest do
     assert [
              Plug.CowboyTest.HTTP,
              %{num_acceptors: 100, max_connections: 16_384, socket_opts: [port: 3000]},
-             %{env: %{dispatch: @dispatch}, compress: true, timeout: 30_000}
-           ] = args(:http, __MODULE__, [], port: 3000, compress: true, timeout: 30_000)
+             %{env: %{dispatch: @dispatch}, compress: true}
+           ] = args(:http, __MODULE__, [], port: 3000, compress: true)
 
     assert [
              Plug.CowboyTest.HTTP,

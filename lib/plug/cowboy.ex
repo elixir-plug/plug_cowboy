@@ -24,16 +24,13 @@ defmodule Plug.Cowboy do
     * `:compress` - Cowboy will attempt to compress the response body.
       Defaults to false.
 
-    * `:timeout` - Time in ms with no requests before Cowboy closes the connection.
-      Defaults to 5000ms.
-
     * `:protocol_options` - Specifies remaining protocol options,
       see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
 
     * `:transport_options` - A keyword list specifying transport options,
-        see [ranch docs](https://ninenines.eu/docs/en/ranch/1.6/manual/ranch/).
-        By default `:num_acceptors` will be set to `100` and `:max_connections`
-        to `16_384`.
+      see [ranch docs](https://ninenines.eu/docs/en/ranch/1.6/manual/ranch/).
+      By default `:num_acceptors` will be set to `100` and `:max_connections`
+      to `16_384`.
 
   All other options are given as `:socket_opts` to the underlying transport.
   When running on HTTPS, any SSL configuration should be given directly to the
@@ -187,7 +184,7 @@ defmodule Plug.Cowboy do
 
   ## Helpers
 
-  @protocol_options [:timeout, :compress, :stream_handlers]
+  @protocol_options [:compress, :stream_handlers]
 
   defp run(scheme, plug, opts, cowboy_options) do
     case Application.ensure_all_started(:cowboy) do
