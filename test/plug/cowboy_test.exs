@@ -96,6 +96,22 @@ defmodule Plug.CowboyTest do
            ] = args(:http, __MODULE__, [], port: 3000, protocol_options: [timeout: 30_000])
   end
 
+  test "builds args with custom stream_handlers" do
+    assert [
+             Plug.CowboyTest.HTTP,
+             %{num_acceptors: 100, max_connections: 16_384, socket_opts: [port: 3000]},
+             %{
+               env: %{dispatch: @dispatch},
+               timeout: 30_000,
+               stream_handlers: [:my_custom_handler]
+             }
+           ] =
+             args(:http, __MODULE__, [],
+               port: 3000,
+               protocol_options: [timeout: 30_000, stream_handlers: [:my_custom_handler]]
+             )
+  end
+
   test "builds args with num_acceptors option writes a deprecation" do
     output =
       capture_io(:stderr, fn ->
@@ -160,7 +176,11 @@ defmodule Plug.CowboyTest do
 
   test "builds args with compress option fails if stream_handlers are set" do
     assert_raise(RuntimeError, ~r/set both compress and stream_handlers/, fn ->
-      args(:http, __MODULE__, [], port: 3000, compress: true, stream_handlers: [:cowboy_stream_h])
+      args(:http, __MODULE__, [],
+        port: 3000,
+        compress: true,
+        protocol_options: [stream_handlers: [:cowboy_stream_h]]
+      )
     end)
   end
 
