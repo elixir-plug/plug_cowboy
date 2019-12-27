@@ -53,7 +53,7 @@ defmodule Plug.Cowboy do
     {cowboy_options, non_keyword_options} = Enum.split_with(cowboy_options, &match?({_, _}, &1))
 
     cowboy_options
-    |> set_compress()
+    |> set_compress_and_stream_handlers()
     |> normalize_cowboy_options(scheme)
     |> to_args(scheme, plug, plug_opts, non_keyword_options)
   end
@@ -184,7 +184,7 @@ defmodule Plug.Cowboy do
 
   ## Helpers
 
-  @protocol_options [:compress, :stream_handlers]
+  @protocol_options [:compress, :protocol_options]
 
   defp run(scheme, plug, opts, cowboy_options) do
     case Application.ensure_all_started(:cowboy) do
@@ -207,19 +207,34 @@ defmodule Plug.Cowboy do
 
   @default_stream_handlers [Plug.Cowboy.Stream]
 
-  defp set_compress(cowboy_options) do
+  defp set_compress_and_stream_handlers(cowboy_options) do
     compress = Keyword.get(cowboy_options, :compress)
-    stream_handlers = Keyword.get(cowboy_options, :stream_handlers)
+    protocol_options = Keyword.get(cowboy_options, :protocol_options, [])
+    stream_handlers = Keyword.get(protocol_options, :stream_handlers)
 
     case {compress, stream_handlers} do
       {true, nil} ->
-        Keyword.put_new(cowboy_options, :stream_handlers, [
-          :cowboy_compress_h | @default_stream_handlers
-        ])
+        protocol_options =
+          Keyword.put_new(protocol_options, :stream_handlers, [
+            :cowboy_compress_h | @default_stream_handlers
+          ])
+
+        Keyword.put(cowboy_options, :protocol_options, protocol_options)
 
       {true, _} ->
         raise "cannot set both compress and stream_handlers at once. " <>
                 "If you wish to set compress, please add `:cowboy_compress_h` to your stream handlers."
+
+      {_, nil} ->
+        protocol_options =
+          Keyword.put(protocol_options, :stream_handlers, @default_stream_handlers)
+
+        Keyword.put(cowboy_options, :protocol_options, protocol_options)
+
+      {_, handlers} ->
+        protocol_options = Keyword.put(protocol_options, :stream_handlers, handlers)
+
+        Keyword.put(cowboy_options, :protocol_options, protocol_options)
 
       _ ->
         cowboy_options
@@ -249,7 +264,6 @@ defmodule Plug.Cowboy do
     dispatch = :cowboy_router.compile(dispatch || dispatch_for(plug, plug_opts))
     {extra_options, opts} = Keyword.split(opts, @protocol_options)
 
-    extra_options = Keyword.put_new(extra_options, :stream_handlers, @default_stream_handlers)
     protocol_and_extra_options = :maps.from_list(protocol_options ++ extra_options)
     protocol_options = Map.merge(%{env: %{dispatch: dispatch}}, protocol_and_extra_options)
     {transport_options, socket_options} = Keyword.pop(opts, :transport_options, [])
