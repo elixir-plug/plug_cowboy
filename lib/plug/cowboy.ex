@@ -24,6 +24,9 @@ defmodule Plug.Cowboy do
     * `:compress` - Cowboy will attempt to compress the response body.
       Defaults to false.
 
+    * `:stream_handlers` - List of Cowboy stream_handlers.
+      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
+
     * `:protocol_options` - Specifies remaining protocol options,
       see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
 
