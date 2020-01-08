@@ -11,43 +11,53 @@ defmodule Plug.CowboyTest do
   handler = {:_, [], Plug.Cowboy.Handler, {Plug.CowboyTest, [foo: :bar]}}
   @dispatch [{:_, [], [handler]}]
 
-  if function_exported?(Supervisor, :child_spec, 2) do
-    test "supports Elixir v1.5 child specs" do
-      spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, options: [port: 4040]]}
+  test "supports Elixir child specs" do
+    spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, port: 4040]}
 
-      assert %{
-               id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-               modules: [:ranch_listener_sup],
-               restart: :permanent,
-               shutdown: :infinity,
-               start: {:ranch_listener_sup, :start_link, _},
-               type: :supervisor
-             } = Supervisor.child_spec(spec, [])
-    end
+    assert %{
+             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
+             modules: [:ranch_listener_sup],
+             restart: :permanent,
+             shutdown: :infinity,
+             start: {:ranch_listener_sup, :start_link, _},
+             type: :supervisor
+           } = Supervisor.child_spec(spec, [])
 
-    test "the h2 alpn settings are added when using https" do
-      options = [
-        port: 4040,
-        password: "cowboy",
-        keyfile: Path.expand("../fixtures/ssl/server_key_enc.pem", __DIR__),
-        certfile: Path.expand("../fixtures/ssl/valid.pem", __DIR__)
-      ]
+    # For backwards compatibility:
+    spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, options: [port: 4040]]}
 
-      spec = {Plug.Cowboy, [scheme: :https, plug: __MODULE__, options: options]}
+    assert %{
+             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
+             modules: [:ranch_listener_sup],
+             restart: :permanent,
+             shutdown: :infinity,
+             start: {:ranch_listener_sup, :start_link, _},
+             type: :supervisor
+           } = Supervisor.child_spec(spec, [])
+  end
 
-      %{start: {:ranch_listener_sup, :start_link, opts}} = Supervisor.child_spec(spec, [])
+  test "the h2 alpn settings are added when using https" do
+    options = [
+      port: 4040,
+      password: "cowboy",
+      keyfile: Path.expand("../fixtures/ssl/server_key_enc.pem", __DIR__),
+      certfile: Path.expand("../fixtures/ssl/valid.pem", __DIR__)
+    ]
 
-      assert [
-               Plug.CowboyTest.HTTPS,
-               :ranch_ssl,
-               %{socket_opts: socket_opts},
-               :cowboy_tls,
-               _proto_opts
-             ] = opts
+    spec = {Plug.Cowboy, [scheme: :https, plug: __MODULE__] ++ options}
 
-      assert Keyword.get(socket_opts, :alpn_preferred_protocols) == ["h2", "http/1.1"]
-      assert Keyword.get(socket_opts, :next_protocols_advertised) == ["h2", "http/1.1"]
-    end
+    %{start: {:ranch_listener_sup, :start_link, opts}} = Supervisor.child_spec(spec, [])
+
+    assert [
+             Plug.CowboyTest.HTTPS,
+             :ranch_ssl,
+             %{socket_opts: socket_opts},
+             :cowboy_tls,
+             _proto_opts
+           ] = opts
+
+    assert Keyword.get(socket_opts, :alpn_preferred_protocols) == ["h2", "http/1.1"]
+    assert Keyword.get(socket_opts, :next_protocols_advertised) == ["h2", "http/1.1"]
   end
 
   test "builds args for cowboy dispatch" do

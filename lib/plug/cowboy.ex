@@ -129,13 +129,13 @@ defmodule Plug.Cowboy do
   ]
 
   @doc """
-  A function for starting a Cowboy2 server under Elixir v1.5 supervisors.
+  A function for starting a Cowboy2 server under Elixir v1.5+ supervisors.
 
-  It expects three options:
+  It supports all options as specified in the module documentation plus it
+  requires the follow two options:
 
     * `:scheme` - either `:http` or `:https`
     * `:plug` - such as MyPlug or {MyPlug, plug_opts}
-    * `:options` - the server options as specified in the module documentation
 
   ## Examples
 
@@ -151,13 +151,18 @@ defmodule Plug.Cowboy do
   """
   def child_spec(opts) do
     scheme = Keyword.fetch!(opts, :scheme)
-    cowboy_opts = Keyword.get(opts, :options, [])
 
     {plug, plug_opts} =
       case Keyword.fetch!(opts, :plug) do
         {_, _} = tuple -> tuple
         plug -> {plug, []}
       end
+
+    # We support :options for backwards compatibility.
+    cowboy_opts =
+      opts
+      |> Keyword.drop([:scheme, :plug, :options])
+      |> Keyword.merge(Keyword.get(opts, :options, []))
 
     cowboy_args = args(scheme, plug, plug_opts, cowboy_opts)
     [ref, transport_opts, proto_opts] = cowboy_args
