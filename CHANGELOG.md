@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.1
+
+### Enhancement
+
+  * Improve docs and simplify child spec API
+
 ## v2.1.0
 
 ### Enhancement
