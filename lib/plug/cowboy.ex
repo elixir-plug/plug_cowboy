@@ -82,7 +82,7 @@ defmodule Plug.Cowboy do
   Runs cowboy under https.
 
   Besides the options described in the module documentation,
-  this modules sets defaults and accepts all options defined
+  this function sets defaults and accepts all options defined
   in `Plug.SSL.configure/2`.
 
   ## Example
