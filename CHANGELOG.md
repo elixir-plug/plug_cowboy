@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.2
+
+### Bug fixes
+
+  * Properly deprecate the :timeout option before removal
+
 ## v2.1.1
 
 ### Enhancement
