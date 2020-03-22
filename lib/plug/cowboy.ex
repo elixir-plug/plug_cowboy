@@ -19,6 +19,9 @@ defmodule Plug.Cowboy do
 
     * `:ref` - the reference name to be used.
       Defaults to `plug.HTTP` (http) and `plug.HTTPS` (https).
+      Note, the default reference name does not contain the port so in order
+      to serve the same plug on multiple ports you need to set the `:ref` accordingly,
+      e.g.: `ref: MyPlug_HTTP_4000`, `ref: MyPlug_HTTP_4001`, etc.
       This is the value that needs to be given on shutdown.
 
     * `:compress` - Cowboy will attempt to compress the response body.
@@ -135,7 +138,7 @@ defmodule Plug.Cowboy do
   requires the follow two options:
 
     * `:scheme` - either `:http` or `:https`
-    * `:plug` - such as MyPlug or {MyPlug, plug_opts}
+    * `:plug` - such as `MyPlug` or `{MyPlug, plug_opts}`
 
   ## Examples
 
