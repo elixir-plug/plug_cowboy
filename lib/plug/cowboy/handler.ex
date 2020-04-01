@@ -6,15 +6,36 @@ defmodule Plug.Cowboy.Handler do
   def init(req, {plug, opts}) do
     conn = @connection.conn(req)
 
+    system_time = System.system_time()
+    start_time_mono = System.monotonic_time()
+
+    :telemetry.execute(
+      [:plug_cowboy, :handler, :start],
+      %{system_time: system_time},
+      %{conn: conn}
+    )
+
     try do
-      %{adapter: {@connection, req}} =
-        conn
-        |> plug.call(opts)
+      conn =
+        %{adapter: {@connection, req}} =
+        plug.call(conn, opts)
         |> maybe_send(plug)
+
+      :telemetry.execute(
+        [:plug_cowboy, :handler, :stop],
+        %{duration: System.monotonic_time() - start_time_mono},
+        %{conn: conn}
+      )
 
       {:ok, req, {plug, opts}}
     catch
       kind, reason ->
+        :telemetry.execute(
+          [:plug_cowboy, :handler, :exception],
+          %{duration: System.monotonic_time() - start_time_mono},
+          %{conn: conn, kind: kind, reason: reason}
+        )
+
         exit_on_error(kind, reason, System.stacktrace(), {plug, :call, [conn, opts]})
     after
       receive do
