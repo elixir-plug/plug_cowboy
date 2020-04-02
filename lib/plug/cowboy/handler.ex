@@ -30,13 +30,15 @@ defmodule Plug.Cowboy.Handler do
       {:ok, req, {plug, opts}}
     catch
       kind, reason ->
+        stack = System.stacktrace()
+
         :telemetry.execute(
           [:plug_cowboy, :handler, :exception],
           %{duration: System.monotonic_time() - start_time_mono},
-          %{conn: conn, kind: kind, reason: reason}
+          %{conn: conn, kind: kind, reason: reason, stack: stack}
         )
 
-        exit_on_error(kind, reason, System.stacktrace(), {plug, :call, [conn, opts]})
+        exit_on_error(kind, reason, stack, {plug, :call, [conn, opts]})
     after
       receive do
         @already_sent -> :ok
