@@ -5,7 +5,11 @@ defmodule Plug.Cowboy.Handler do
 
   def init(req, {plug, opts}) do
     start = System.monotonic_time()
-    :telemetry.execute([:plug_adapter, :request, :start], %{name: :plug_cowboy, start_time: System.system_time()})
+
+    :telemetry.execute([:plug_adapter, :request, :start], %{
+      name: :plug_cowboy,
+      start_time: System.system_time()
+    })
 
     conn = @connection.conn(req)
 
