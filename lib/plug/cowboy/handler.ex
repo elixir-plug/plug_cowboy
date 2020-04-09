@@ -5,7 +5,7 @@ defmodule Plug.Cowboy.Handler do
 
   def init(req, {plug, opts}) do
     start = System.monotonic_time()
-    :telemetry.execute([:plug_adapter, :handler, :start], %{name: :plug_cowboy, start_time: System.system_time()})
+    :telemetry.execute([:plug_adapter, :request, :start], %{name: :plug_cowboy, start_time: System.system_time()})
 
     conn = @connection.conn(req)
 
@@ -21,7 +21,7 @@ defmodule Plug.Cowboy.Handler do
         stacktrace = System.stacktrace()
         metadata = %{kind: kind, error: reason, stacktrace: stacktrace, name: :plug_cowboy}
         measurements = %{duration: System.monotonic_time() - start}
-        :telemetry.execute([:plug_adapter, :handler, :failure], measurements, metadata)
+        :telemetry.execute([:plug_adapter, :request, :failure], measurements, metadata)
 
         exit_on_error(kind, reason, stacktrace, {plug, :call, [conn, opts]})
     after
@@ -29,11 +29,13 @@ defmodule Plug.Cowboy.Handler do
         @already_sent -> :ok
       after
         0 ->
-          measurements = %{duration: System.monotonic_time() - start}
-          :telemetry.execute([:plug_adapter, :handler, :stop], measurements, %{name: :plug_cowboy})
-
           :ok
       end
+    else
+      result ->
+        measurements = %{duration: System.monotonic_time() - start}
+        :telemetry.execute([:plug_adapter, :request, :stop], measurements, %{name: :plug_cowboy})
+        result
     end
   end
 
