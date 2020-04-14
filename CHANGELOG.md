@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.3
+
+### Bug fixes
+
+  * Properly support the :options option before removal
+
 ## v2.1.2
 
 ### Bug fixes
