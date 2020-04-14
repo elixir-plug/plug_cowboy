@@ -34,6 +34,19 @@ defmodule Plug.CowboyTest do
              start: {:ranch_listener_sup, :start_link, _},
              type: :supervisor
            } = Supervisor.child_spec(spec, [])
+
+    spec =
+      {Plug.Cowboy,
+       [scheme: :http, plug: __MODULE__, parent: :key, options: [:inet6, port: 4040]]}
+
+    assert %{
+             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
+             modules: [:ranch_listener_sup],
+             restart: :permanent,
+             shutdown: :infinity,
+             start: {:ranch_listener_sup, :start_link, _},
+             type: :supervisor
+           } = Supervisor.child_spec(spec, [])
   end
 
   test "the h2 alpn settings are added when using https" do

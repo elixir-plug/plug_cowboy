@@ -165,7 +165,7 @@ defmodule Plug.Cowboy do
     cowboy_opts =
       opts
       |> Keyword.drop([:scheme, :plug, :options])
-      |> Keyword.merge(Keyword.get(opts, :options, []))
+      |> Kernel.++(Keyword.get(opts, :options, []))
 
     cowboy_args = args(scheme, plug, plug_opts, cowboy_opts)
     [ref, transport_opts, proto_opts] = cowboy_args
