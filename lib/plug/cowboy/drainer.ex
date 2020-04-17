@@ -39,7 +39,7 @@ defmodule Plug.Cowboy.Drainer do
           {Plug.Cowboy.Drainer, refs: [MyApp.HTTP, MyApp.HTTPS]}
         ]
 
-        opts = [strategy: :one_for_one, name: Hello.Supervisor]
+        opts = [strategy: :one_for_one, name: MyApp.Supervisor]
         Supervisor.start_link(children, opts)
       end
   """
