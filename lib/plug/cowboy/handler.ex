@@ -25,7 +25,14 @@ defmodule Plug.Cowboy.Handler do
         :telemetry.execute(
           [:plug_adapter, :call, :exception],
           %{duration: System.monotonic_time() - start},
-          %{kind: kind, error: reason, stacktrace: stacktrace, adapter: @adapter, conn: conn, plug: plug}
+          %{
+            kind: kind,
+            error: reason,
+            stacktrace: stacktrace,
+            adapter: @adapter,
+            conn: conn,
+            plug: plug
+          }
         )
 
         exit_on_error(kind, reason, System.stacktrace(), {plug, :call, [conn, opts]})

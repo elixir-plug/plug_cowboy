@@ -267,10 +267,18 @@ defmodule Plug.Cowboy.ConnTest do
     assert {200, [_ | _], "STOP"} = request(:get, "/telemetry_stop")
 
     assert_receive {:event, [:plug_adapter, :call, :start], %{system_time: _},
-                    %{adapter: :plug_cowboy, conn: %{request_path: "/telemetry_stop"}, plug: __MODULE__}}
+                    %{
+                      adapter: :plug_cowboy,
+                      conn: %{request_path: "/telemetry_stop"},
+                      plug: __MODULE__
+                    }}
 
     assert_receive {:event, [:plug_adapter, :call, :stop], %{duration: _},
-                    %{adapter: :plug_cowboy, conn: %{request_path: "/telemetry_stop", status: 200}, plug: __MODULE__}}
+                    %{
+                      adapter: :plug_cowboy,
+                      conn: %{request_path: "/telemetry_stop", status: 200},
+                      plug: __MODULE__
+                    }}
 
     refute_received {:event, [:plug_adapter, :call, :exception], _, _}
   end
@@ -281,10 +289,19 @@ defmodule Plug.Cowboy.ConnTest do
     assert {200, [_ | _], _} = request(:get, "/telemetry_exception")
 
     assert_receive {:event, [:plug_adapter, :call, :start], %{system_time: _},
-                    %{adapter: :plug_cowboy, conn: %{request_path: "/telemetry_exception"}, plug: __MODULE__}}
+                    %{
+                      adapter: :plug_cowboy,
+                      conn: %{request_path: "/telemetry_exception"},
+                      plug: __MODULE__
+                    }}
 
     assert_receive {:event, [:plug_adapter, :call, :exception], %{duration: _},
-                    %{adapter: :plug_cowboy, error: %RuntimeError{}, conn: %{request_path: "/telemetry_exception"}, plug: __MODULE__}}
+                    %{
+                      adapter: :plug_cowboy,
+                      error: %RuntimeError{},
+                      conn: %{request_path: "/telemetry_exception"},
+                      plug: __MODULE__
+                    }}
 
     refute_received {:event, [:plug_adapter, :call, :stop], _, _}
   end
