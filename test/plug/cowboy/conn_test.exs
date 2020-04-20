@@ -234,15 +234,14 @@ defmodule Plug.Cowboy.ConnTest do
   end
 
   def inform(conn) do
-    # TODO: change from :processing to :early_hints once cowlib is updated.
     conn
-    |> inform(:processing, [{"link", "</style.css>; rel=preload; as=style"}])
+    |> inform(:early_hints, [{"link", "</style.css>; rel=preload; as=style"}])
     |> send_resp(200, "inform")
   end
 
   test "inform will not raise even though the adapter doesn't implement it" do
     # the _body in this response is actually garbled. this is a bug in the HTTP/1.1 client and not in plug
-    assert {102, [{"link", "</style.css>; rel=preload; as=style"}], _body} =
+    assert {103, [{"link", "</style.css>; rel=preload; as=style"}], _body} =
              request(:get, "/inform")
   end
 
