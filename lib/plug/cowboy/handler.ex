@@ -11,7 +11,7 @@ defmodule Plug.Cowboy.Handler do
     :telemetry.execute(
       [:plug_adapter, :call, :start],
       %{system_time: System.system_time()},
-      %{adapter: @adapter, conn: conn}
+      %{adapter: @adapter, conn: conn, plug: plug}
     )
 
     try do
@@ -25,7 +25,7 @@ defmodule Plug.Cowboy.Handler do
         :telemetry.execute(
           [:plug_adapter, :call, :exception],
           %{duration: System.monotonic_time() - start},
-          %{kind: kind, error: reason, stacktrace: stacktrace, adapter: @adapter, conn: conn}
+          %{kind: kind, error: reason, stacktrace: stacktrace, adapter: @adapter, conn: conn, plug: plug}
         )
 
         exit_on_error(kind, reason, System.stacktrace(), {plug, :call, [conn, opts]})
@@ -34,7 +34,7 @@ defmodule Plug.Cowboy.Handler do
         :telemetry.execute(
           [:plug_adapter, :call, :stop],
           %{duration: System.monotonic_time() - start},
-          %{adapter: @adapter, conn: conn}
+          %{adapter: @adapter, conn: conn, plug: plug}
         )
 
         {:ok, req, {plug, opts}}
