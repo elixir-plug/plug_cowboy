@@ -2,20 +2,42 @@ defmodule Plug.Cowboy.Handler do
   @moduledoc false
   @connection Plug.Cowboy.Conn
   @already_sent {:plug_conn, :sent}
+  @adapter :plug_cowboy
 
   def init(req, {plug, opts}) do
+    start = System.monotonic_time()
     conn = @connection.conn(req)
 
-    try do
-      %{adapter: {@connection, req}} =
-        conn
-        |> plug.call(opts)
-        |> maybe_send(plug)
+    :telemetry.execute(
+      [:plug_adapter, :call, :start],
+      %{system_time: System.system_time()},
+      %{adapter: @adapter, conn: conn}
+    )
 
-      {:ok, req, {plug, opts}}
+    try do
+      conn
+      |> plug.call(opts)
+      |> maybe_send(plug)
     catch
       kind, reason ->
+        stacktrace = System.stacktrace()
+
+        :telemetry.execute(
+          [:plug_adapter, :call, :exception],
+          %{duration: System.monotonic_time() - start},
+          %{kind: kind, error: reason, stacktrace: stacktrace, adapter: @adapter, conn: conn}
+        )
+
         exit_on_error(kind, reason, System.stacktrace(), {plug, :call, [conn, opts]})
+    else
+      %{adapter: {@connection, req}} = conn ->
+        :telemetry.execute(
+          [:plug_adapter, :call, :stop],
+          %{duration: System.monotonic_time() - start},
+          %{adapter: @adapter, conn: conn}
+        )
+
+        {:ok, req, {plug, opts}}
     after
       receive do
         @already_sent -> :ok
