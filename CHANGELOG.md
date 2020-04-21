@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.2.0
+
+### Enhancements
+
+  * Include telemetry support
+
 ## v2.1.3
 
 ### Bug fixes

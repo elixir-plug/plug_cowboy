@@ -1,7 +1,7 @@
 defmodule Plug.Cowboy.MixProject do
   use Mix.Project
 
-  @version "2.1.3"
+  @version "2.2.0"
   @description "A Plug adapter for Cowboy"
 
   def project do
@@ -33,7 +33,7 @@ defmodule Plug.Cowboy.MixProject do
   def deps do
     [
       {:plug, "~> 1.7"},
-      {:cowboy, "~> 2.5"},
+      {:cowboy, "~> 2.7"},
       {:telemetry, "~> 0.4"},
       {:ex_doc, "~> 0.20", only: :docs},
       {:hackney, "~> 1.2.0", only: :test},
