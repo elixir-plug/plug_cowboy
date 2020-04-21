@@ -27,7 +27,7 @@ defmodule Plug.Cowboy.Handler do
           %{duration: System.monotonic_time() - start},
           %{
             kind: kind,
-            error: reason,
+            reason: reason,
             stacktrace: stacktrace,
             adapter: @adapter,
             conn: conn,

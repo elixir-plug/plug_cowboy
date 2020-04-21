@@ -298,7 +298,7 @@ defmodule Plug.Cowboy.ConnTest do
     assert_receive {:event, [:plug_adapter, :call, :exception], %{duration: _},
                     %{
                       adapter: :plug_cowboy,
-                      error: %RuntimeError{},
+                      reason: %RuntimeError{},
                       conn: %{request_path: "/telemetry_exception"},
                       plug: __MODULE__
                     }}

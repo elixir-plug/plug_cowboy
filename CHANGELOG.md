@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.2.1
+
+### Enhancements
+
+  * Use proper telemetry metadata for exceptions
+
 ## v2.2.0
 
 ### Enhancements
