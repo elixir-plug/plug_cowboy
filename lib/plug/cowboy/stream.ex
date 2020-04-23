@@ -1,16 +1,6 @@
 defmodule Plug.Cowboy.Stream do
   @moduledoc false
 
-  @default_protocol_opts %{
-    max_authority_length: 255,
-    max_empty_lines: 5,
-    max_header_name_length: 64,
-    max_header_value_length: 4096,
-    max_headers: 100,
-    max_method_length: 32,
-    max_request_line_length: 8000
-  }
-
   require Logger
 
   def init(stream_id, req, opts) do
@@ -34,24 +24,27 @@ defmodule Plug.Cowboy.Stream do
     :ok
   end
 
-  def early_error(_stream_id, reason, partial_req, resp, opts) do
+  def early_error(_stream_id, reason, _partial_req, resp, _opts) do
     case reason do
       {:connection_error, :limit_reached, specific_reason} ->
         Logger.error("""
         Cowboy returned 431 because it was unable to parse the request headers.
 
+        This may happen because there are no headers, or there are too many headers
+        or the header name or value are too large (such as a large cookie).
+
         More specific reason is:
 
-            #{inspect_indented(specific_reason)}
+            #{inspect(specific_reason)}
 
-        You can customize those limits when configuring your http/https server.
-        The configuration option and their effective values are shown below:
+        You can customize those limits when configuring your http/https
+        server. The configuration option and default values are shown below:
 
-            protocol_options: #{inspect_indented(get_protocol_opts(opts))}
-
-        Partially parsed request:
-
-            #{inspect_indented(partial_req)}
+            protocol_options: [
+              max_header_name_length: 64,
+              max_header_value_length: 4096,
+              max_headers: 100
+            ]
         """)
 
       _ ->
@@ -59,22 +52,5 @@ defmodule Plug.Cowboy.Stream do
     end
 
     resp
-  end
-
-  defp get_protocol_opts(opts) do
-    protocol_opts =
-      opts
-      |> Map.take(Map.keys(@default_protocol_opts))
-      |> Keyword.new()
-
-    @default_protocol_opts
-    |> Keyword.new()
-    |> Keyword.merge(protocol_opts)
-  end
-
-  defp inspect_indented(value) do
-    value
-    |> inspect(pretty: true)
-    |> String.replace("\n", "\n    ")
   end
 end
