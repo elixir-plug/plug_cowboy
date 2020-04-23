@@ -8,7 +8,7 @@ defmodule Plug.Cowboy.Stream do
     max_header_value_length: 4096,
     max_headers: 100,
     max_method_length: 32,
-    max_request_line_length: 8000,
+    max_request_line_length: 8000
   }
 
   require Logger
@@ -62,9 +62,11 @@ defmodule Plug.Cowboy.Stream do
   end
 
   defp get_protocol_opts(opts) do
-    protocol_opts = opts
-    |> Map.take(Map.keys(@default_protocol_opts))
-    |> Keyword.new()
+    protocol_opts =
+      opts
+      |> Map.take(Map.keys(@default_protocol_opts))
+      |> Keyword.new()
+
     @default_protocol_opts
     |> Keyword.new()
     |> Keyword.merge(protocol_opts)
