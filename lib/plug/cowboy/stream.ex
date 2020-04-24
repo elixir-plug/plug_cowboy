@@ -24,7 +24,7 @@ defmodule Plug.Cowboy.Stream do
     :ok
   end
 
-  def early_error(_stream_id, reason, _partial_req, resp, _opts) do
+  def early_error(_stream_id, reason, partial_req, resp, _opts) do
     case reason do
       {:connection_error, :limit_reached, specific_reason} ->
         Logger.error("""
