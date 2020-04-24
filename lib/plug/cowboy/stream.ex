@@ -48,7 +48,7 @@ defmodule Plug.Cowboy.Stream do
 
         Request info:
 
-            peer: #{inspect(partial_req.peer)}
+            peer: #{format_peer(partial_req.peer)}
             method: #{Map.get(partial_req, :method, "<unable to parse>")}
             path: #{Map.get(partial_req, :path, "<unable to parse>")}
         """)
@@ -58,5 +58,9 @@ defmodule Plug.Cowboy.Stream do
     end
 
     resp
+  end
+
+  defp format_peer({addr, port}) do
+    "#{:inet_parse.ntoa(addr)}:#{port}"
   end
 end
