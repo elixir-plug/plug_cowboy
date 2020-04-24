@@ -24,16 +24,20 @@ defmodule Plug.Cowboy.Stream do
     :ok
   end
 
-  def early_error(_stream_id, reason, _partial_req, resp, _opts) do
+  def early_error(_stream_id, reason, partial_req, resp, _opts) do
     case reason do
-      {:connection_error, :limit_reached, _} ->
+      {:connection_error, :limit_reached, specific_reason} ->
         Logger.error("""
         Cowboy returned 431 because it was unable to parse the request headers.
 
         This may happen because there are no headers, or there are too many headers
         or the header name or value are too large (such as a large cookie).
 
-        You can customize those values when configuring your http/https
+        More specific reason is:
+
+            #{inspect(specific_reason)}
+
+        You can customize those limits when configuring your http/https
         server. The configuration option and default values are shown below:
 
             protocol_options: [
@@ -41,6 +45,12 @@ defmodule Plug.Cowboy.Stream do
               max_header_value_length: 4096,
               max_headers: 100
             ]
+
+        Request info:
+
+            peer: #{format_peer(partial_req.peer)}
+            method: #{Map.get(partial_req, :method, "<unable to parse>")}
+            path: #{Map.get(partial_req, :path, "<unable to parse>")}
         """)
 
       _ ->
@@ -48,5 +58,9 @@ defmodule Plug.Cowboy.Stream do
     end
 
     resp
+  end
+
+  defp format_peer({addr, port}) do
+    "#{:inet_parse.ntoa(addr)}:#{port}"
   end
 end
