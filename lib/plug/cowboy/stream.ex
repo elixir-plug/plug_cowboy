@@ -45,6 +45,12 @@ defmodule Plug.Cowboy.Stream do
               max_header_value_length: 4096,
               max_headers: 100
             ]
+
+        Request info:
+
+            peer: #{inspect(partial_req.peer)}
+            method: #{Map.get(partial_req, :method, "<unable to parse>")}
+            path: #{Map.get(partial_req, :path, "<unable to parse>")}
         """)
 
       _ ->
