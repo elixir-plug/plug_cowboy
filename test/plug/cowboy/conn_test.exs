@@ -151,9 +151,16 @@ defmodule Plug.Cowboy.ConnTest do
                       system_time: _
                     },
                     %{
-                      partial_req: %{method: "GET", path: "/headers"},
                       reason: {:connection_error, :limit_reached, _},
-                      resp: {:response, 431, _headers, _body}
+                      request: %{
+                        method: "GET",
+                        path: "/headers"
+                      },
+                      response: %{
+                        status: 431,
+                        headers: _,
+                        body: _
+                      }
                     }}
 
     :telemetry.detach(:early_error_test)
