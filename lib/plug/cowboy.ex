@@ -43,6 +43,20 @@ defmodule Plug.Cowboy do
   adapter. See `https/3` for an example and read `Plug.SSL.configure/1` to
   understand about our SSL defaults. When using a unix socket, OTP 21+ is
   required for `Plug.Static` and `Plug.Conn.send_file/3` to behave correctly.
+
+  ## Telemetry Events
+
+  The adapter emits `telemetry` events including span events that wrap
+  each call to the plug pipeline:
+
+  * `[:plug_adapter, :call, :start]`
+  * `[:plug_adapter, :call, :stop]`
+  * `[:plug_adapter, :call, :exception]`
+
+  Additionally, an event is emitted when Cowboy sends an early error response
+  before the plug pipeline is called:
+
+  * `[:plug_cowboy, :early_error]`
   """
 
   require Logger
