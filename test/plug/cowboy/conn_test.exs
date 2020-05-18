@@ -130,12 +130,40 @@ defmodule Plug.Cowboy.ConnTest do
   end
 
   test "fails on large headers" do
+    :telemetry.attach(
+      :early_error_test,
+      [:plug_cowboy, :early_error],
+      fn name, measurements, metadata, test ->
+        send(test, {:event, name, measurements, metadata})
+      end,
+      self()
+    )
+
     assert capture_log(fn ->
              cookie = "bar=" <> String.duplicate("a", 8_000_000)
              response = request(:get, "/headers", [{"cookie", cookie}])
              assert match?({431, _, _}, response) or match?({:error, :closed}, response)
              assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
            end) =~ "Cowboy returned 431 because it was unable to parse the request headers"
+
+    assert_receive {:event, [:plug_cowboy, :early_error],
+                    %{
+                      system_time: _
+                    },
+                    %{
+                      reason: {:connection_error, :limit_reached, _},
+                      request: %{
+                        method: "GET",
+                        path: "/headers"
+                      },
+                      response: %{
+                        status: 431,
+                        headers: _,
+                        body: _
+                      }
+                    }}
+
+    :telemetry.detach(:early_error_test)
   end
 
   def send_200(conn) do
