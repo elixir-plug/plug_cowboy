@@ -49,14 +49,14 @@ defmodule Plug.Cowboy do
   The adapter emits `telemetry` events including span events that wrap
   each call to the plug pipeline:
 
-  * `[:plug_adapter, :call, :start]`
-  * `[:plug_adapter, :call, :stop]`
-  * `[:plug_adapter, :call, :exception]`
+    * `[:plug_adapter, :call, :start]`
+    * `[:plug_adapter, :call, :stop]`
+    * `[:plug_adapter, :call, :exception]`
 
   Additionally, an event is emitted when Cowboy sends an early error response
   before the plug pipeline is called:
 
-  * `[:plug_cowboy, :early_error]`
+    * `[:plug_cowboy, :early_error]`
   """
 
   require Logger
