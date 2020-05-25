@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2.2
+
+### Enhancements
+
+  * Emit telemetry event for Cowboy early errors
+  * Improve error messages for Cowboy early errors
+
 ## v2.2.1
 
 ### Enhancements
