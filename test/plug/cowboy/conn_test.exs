@@ -20,19 +20,26 @@ defmodule Plug.Cowboy.ConnTest do
     certfile: Path.expand("../../fixtures/ssl/client.pem", __DIR__),
     cacertfile: Path.expand("../../fixtures/ssl/ca_and_chain.pem", __DIR__)
   ]
+
+  @protocol_options [
+    idle_timeout: 1000,
+    request_timeout: 1000
+  ]
+
   @https_options [
     port: 8004,
     password: "cowboy",
     verify: :verify_peer,
     keyfile: Path.expand("../../fixtures/ssl/server_key_enc.pem", __DIR__),
     certfile: Path.expand("../../fixtures/ssl/valid.pem", __DIR__),
-    cacertfile: Path.expand("../../fixtures/ssl/ca_and_chain.pem", __DIR__)
+    cacertfile: Path.expand("../../fixtures/ssl/ca_and_chain.pem", __DIR__),
+    protocol_options: @protocol_options
   ]
 
   setup_all do
     {:ok, _} = Application.ensure_all_started(:kadabra)
-    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 8003)
-    {:ok, _pid} = Plug.Cowboy.https(__MODULE__, [], @https_options)
+    {:ok, _} = Plug.Cowboy.http(__MODULE__, [], port: 8003, protocol_options: @protocol_options)
+    {:ok, _} = Plug.Cowboy.https(__MODULE__, [], @https_options)
 
     on_exit(fn ->
       :ok = Plug.Cowboy.shutdown(__MODULE__.HTTP)
@@ -336,7 +343,7 @@ defmodule Plug.Cowboy.ConnTest do
 
   def inform(conn) do
     conn
-    |> inform(:early_hints, [{"link", "</style.css>; rel=preload; as=style"}])
+    |> inform(103, [{"link", "</style.css>; rel=preload; as=style"}])
     |> send_resp(200, "inform")
   end
 
