@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.0
+
+### Incompatible changes
+
+  * The telemetry events added in version v2.2.0 does not work as expected. In particular, there is no guarantee the `stop` and `exception` events will be invoked. Therefore, these events have been removed.
+
 ## v2.2.2
 
 ### Enhancements
