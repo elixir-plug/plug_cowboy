@@ -212,6 +212,13 @@ defmodule Plug.Cowboy do
         other -> :erlang.error({:badarg, [other]})
       end
 
+    :telemetry.attach(
+      :plug_cowboy,
+      [:cowboy, :request, :early_error],
+      &handle_event/4,
+      nil
+    )
+
     apply(:cowboy, start, args(scheme, plug, opts, cowboy_options))
   end
 
@@ -275,7 +282,7 @@ defmodule Plug.Cowboy do
     [ref || build_ref(plug, scheme), transport_options, protocol_options]
   end
 
-  @default_stream_handlers [Plug.Cowboy.Stream]
+  @default_stream_handlers [:cowboy_telemetry_h, :cowboy_stream_h]
 
   defp set_stream_handlers(opts) do
     compress = Keyword.get(opts, :compress)
@@ -308,6 +315,47 @@ defmodule Plug.Cowboy do
 
   defp fail(message) do
     raise ArgumentError, "could not start Cowboy2 adapter, " <> message
+  end
+
+  def handle_event(
+        [:cowboy, :request, :early_error],
+        _,
+        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req},
+        _
+      ) do
+    Logger.error("""
+    Cowboy returned 431 because it was unable to parse the request headers.
+
+    This may happen because there are no headers, or there are too many headers
+    or the header name or value are too large (such as a large cookie).
+
+    More specific reason is:
+
+        #{inspect(specific_reason)}
+
+    You can customize those limits when configuring your http/https
+    server. The configuration option and default values are shown below:
+
+        protocol_options: [
+          max_header_name_length: 64,
+          max_header_value_length: 4096,
+          max_headers: 100
+        ]
+
+    Request info:
+
+        peer: #{format_peer(partial_req.peer)}
+        method: #{partial_req.method || "<unable to parse>"}
+        path: #{partial_req.path || "<unable to parse>"}
+    """)
+  end
+
+  def handle_event(_, _, _, _) do
+    :ok
+  end
+
+  defp format_peer({addr, port}) do
+    "#{:inet_parse.ntoa(addr)}:#{port}"
   end
 
   defp option_deprecation_warning(:acceptors),
