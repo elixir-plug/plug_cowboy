@@ -303,7 +303,7 @@ defmodule Plug.Cowboy do
     [ref || build_ref(plug, scheme), transport_options, protocol_options]
   end
 
-  @default_stream_handlers [Plug.Cowboy.Stream]
+  @default_stream_handlers [Plug.Cowboy.Telemetry, Plug.Cowboy.Stream]
 
   defp set_stream_handlers(opts) do
     compress = Keyword.get(opts, :compress)

@@ -136,6 +136,56 @@ defmodule Plug.Cowboy.ConnTest do
     assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
   end
 
+  def telemetry(conn) do
+    Process.sleep(30)
+    send_resp(conn, 200, "TELEMETRY")
+  end
+
+  test "emits telemetry events for start/stop" do
+    :telemetry.attach_many(
+      :start_stop_test,
+      [
+        [:plug_cowboy, :stream_handler, :start],
+        [:plug_cowboy, :stream_handler, :stop]
+      ],
+      fn event, measurements, metadata, test ->
+        send(test, {:telemetry, event, measurements, metadata})
+      end,
+      self()
+    )
+
+    assert {200, [_ | _], "TELEMETRY"} = request(:get, "/telemetry?foo=bar")
+
+    assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :start], %{system_time: _},
+                    %{
+                      host: "127.0.0.1",
+                      method: "GET",
+                      request_path: "/telemetry",
+                      port: 8003,
+                      remote_ip: {127, 0, 0, 1},
+                      scheme: "http",
+                      req_headers: req_headers,
+                      query_string: "foo=bar"
+                    }}
+
+    assert is_list(req_headers)
+
+    assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :stop], %{duration: duration},
+                    %{
+                      status: 200,
+                      resp_headers: resp_headers,
+                      body: "TELEMETRY"
+                    }}
+
+    duration_ms = System.convert_time_unit(duration, :native, :millisecond)
+
+    assert duration_ms >= 30
+    assert duration_ms < 100
+    assert is_list(resp_headers)
+
+    :telemetry.detach(:start_stop_test)
+  end
+
   test "fails on large headers" do
     :telemetry.attach(
       :early_error_test,
