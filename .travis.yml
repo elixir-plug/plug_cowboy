@@ -12,7 +12,7 @@ jobs:
   include:
     - stage: test
 
-    - elixir: '1.7.0'
+    - elixir: '1.7.4'
       otp_release: '20.3'
 
     - stage: check formatted
