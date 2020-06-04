@@ -33,25 +33,26 @@ defmodule Plug.Cowboy.Telemetry do
           }
         )
 
-      {:EXIT, _pid, {{{reason, stacktrace}, _init_call}, _exit_stack}} ->
+      _ ->
+        :ignore
+    end
+
+    :cowboy_stream.info(stream_id, info, state)
+  end
+
+  def info(stream_id, info, state) do
+    case info do
+      {:EXIT, _pid, reason} ->
         :telemetry.execute(
           [:plug_cowboy, :stream_handler, :exception],
-          %{duration: end_time - start_time},
-          %{
-            kind: :exit,
-            reason: reason,
-            stacktrace: stacktrace
-          }
+          %{},
+          %{kind: :exit, reason: reason}
         )
 
       _ ->
         :ignore
     end
 
-    info(stream_id, info, state)
-  end
-
-  def info(stream_id, info, state) do
     :cowboy_stream.info(stream_id, info, state)
   end
 

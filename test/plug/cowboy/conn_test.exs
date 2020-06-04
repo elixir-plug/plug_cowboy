@@ -141,6 +141,12 @@ defmodule Plug.Cowboy.ConnTest do
     send_resp(conn, 200, "TELEMETRY")
   end
 
+  def telemetry_exception(conn) do
+    # send first because of the `rescue` in `call`
+    send_resp(conn, 200, "Fail")
+    raise "BadTimes"
+  end
+
   test "emits telemetry events for start/stop" do
     :telemetry.attach_many(
       :start_stop_test,
@@ -154,7 +160,7 @@ defmodule Plug.Cowboy.ConnTest do
       self()
     )
 
-    assert {200, [_ | _], "TELEMETRY"} = request(:get, "/telemetry?foo=bar")
+    assert {200, _, "TELEMETRY"} = request(:get, "/telemetry?foo=bar")
 
     assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :start], %{system_time: _},
                     %{
@@ -184,6 +190,29 @@ defmodule Plug.Cowboy.ConnTest do
     assert is_list(resp_headers)
 
     :telemetry.detach(:start_stop_test)
+  end
+
+  test "emits telemetry events for exception" do
+    :telemetry.attach_many(
+      :exception_test,
+      [
+        [:plug_cowboy, :stream_handler, :exception]
+      ],
+      fn event, measurements, metadata, test ->
+        send(test, {:telemetry, event, measurements, metadata})
+      end,
+      self()
+    )
+
+    request(:get, "/telemetry_exception")
+
+    assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :exception], %{},
+                    %{
+                      kind: :exit,
+                      reason: _reason
+                    }}
+
+    :telemetry.detach(:exception_test)
   end
 
   test "fails on large headers" do
