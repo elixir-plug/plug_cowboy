@@ -33,15 +33,6 @@ defmodule Plug.Cowboy.Telemetry do
           }
         )
 
-      _ ->
-        :ignore
-    end
-
-    :cowboy_stream.info(stream_id, info, state)
-  end
-
-  def info(stream_id, info, state) do
-    case info do
       {:EXIT, _pid, reason} ->
         :telemetry.execute(
           [:plug_cowboy, :stream_handler, :exception],
@@ -53,22 +44,16 @@ defmodule Plug.Cowboy.Telemetry do
         :ignore
     end
 
-    :cowboy_stream.info(stream_id, info, state)
+    {commands, state} = :cowboy_stream.info(stream_id, info, state)
+    {commands, [state, start_time]}
   end
 
-  def data(stream_id, is_fin, data, [state | _]) do
-    data(stream_id, is_fin, data, state)
+  def data(stream_id, is_fin, data, [state, start_time]) do
+    {commands, state} = :cowboy_stream.data(stream_id, is_fin, data, state)
+    {commands, [state, start_time]}
   end
 
-  def data(stream_id, is_fin, data, state) do
-    :cowboy_stream.data(stream_id, is_fin, data, state)
-  end
-
-  def terminate(stream_id, reason, [state | _]) do
-    terminate(stream_id, reason, state)
-  end
-
-  def terminate(stream_id, reason, state) do
+  def terminate(stream_id, reason, [state, _start_time]) do
     :cowboy_stream.terminate(stream_id, reason, state)
   end
 
