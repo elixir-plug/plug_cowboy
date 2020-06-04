@@ -14,11 +14,11 @@ defmodule Plug.Cowboy.Telemetry do
       query_string: req.qs
     })
 
-    {commands, next} = :cowboy_stream.init(stream_id, req, opts)
-    {commands, [next, start_time]}
+    {commands, state} = :cowboy_stream.init(stream_id, req, opts)
+    {commands, [state, start_time]}
   end
 
-  def info(stream_id, info, [next, start_time]) do
+  def info(stream_id, info, [state, start_time]) do
     end_time = System.monotonic_time()
 
     case info do
@@ -48,23 +48,23 @@ defmodule Plug.Cowboy.Telemetry do
         :ignore
     end
 
-    :cowboy_stream.info(stream_id, info, next)
+    info(stream_id, info, state)
   end
 
-  def info(stream_id, info, next) do
-    :cowboy_stream.info(stream_id, info, next)
+  def info(stream_id, info, state) do
+    :cowboy_stream.info(stream_id, info, state)
   end
 
-  def data(stream_id, is_fin, data, [next | _]) do
-    :cowboy_stream.data(stream_id, is_fin, data, next)
+  def data(stream_id, is_fin, data, [state | _]) do
+    data(stream_id, is_fin, data, state)
   end
 
   def data(stream_id, is_fin, data, state) do
     :cowboy_stream.data(stream_id, is_fin, data, state)
   end
 
-  def terminate(stream_id, reason, [next | _]) do
-    :cowboy_stream.terminate(stream_id, reason, next)
+  def terminate(stream_id, reason, [state | _]) do
+    terminate(stream_id, reason, state)
   end
 
   def terminate(stream_id, reason, state) do
