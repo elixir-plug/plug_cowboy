@@ -65,7 +65,7 @@ defmodule Plug.Cowboy.Telemetry do
       %{system_time: System.system_time()},
       %{
         reason: reason,
-        request: %{method: partial_req[:method], path: partial_req[:path]},
+        request: %{method: partial_req[:method], path: partial_req[:path], peer: partial_req.peer},
         response: %{status: status, headers: headers, body: body}
       }
     )
