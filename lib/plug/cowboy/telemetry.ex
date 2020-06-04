@@ -38,7 +38,7 @@ defmodule Plug.Cowboy.Telemetry do
           [:plug_cowboy, :stream_handler, :exception],
           %{duration: end_time - start_time},
           %{
-            kind: :error,
+            kind: :exit,
             reason: reason,
             stacktrace: stacktrace
           }
