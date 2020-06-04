@@ -33,6 +33,17 @@ defmodule Plug.Cowboy.Telemetry do
           }
         )
 
+      {:EXIT, _pid, {{{reason, stacktrace}, _init_call}, _exit_stack}} ->
+        :telemetry.execute(
+          [:plug_cowboy, :stream_handler, :exception],
+          %{duration: end_time - start_time},
+          %{
+            kind: :error,
+            reason: reason,
+            stacktrace: stacktrace
+          }
+        )
+
       _ ->
         :ignore
     end
