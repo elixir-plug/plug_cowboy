@@ -1,7 +1,7 @@
 language: elixir
 sudo: false
 
-elixir: '1.7.3'
+elixir: '1.10.3'
 otp_release: '21.1'
 
 stages:
@@ -12,7 +12,7 @@ jobs:
   include:
     - stage: test
 
-    - elixir: '1.5.3'
+    - elixir: '1.7.4'
       otp_release: '20.3'
 
     - stage: check formatted
