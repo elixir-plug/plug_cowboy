@@ -65,14 +65,14 @@ defmodule Plug.Cowboy.ConnTest do
     exception ->
       receive do
         {:plug_conn, :sent} ->
-          :erlang.raise(:error, exception, System.stacktrace())
+          :erlang.raise(:error, exception, __STACKTRACE__)
       after
         0 ->
           send_resp(
             conn,
             500,
             Exception.message(exception) <>
-              "\n" <> Exception.format_stacktrace(System.stacktrace())
+              "\n" <> Exception.format_stacktrace(__STACKTRACE__)
           )
       end
   end
