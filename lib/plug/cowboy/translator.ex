@@ -8,10 +8,10 @@ defmodule Plug.Cowboy.Translator do
         min_level,
         :error,
         :format,
-        {~c"Ranch listener" ++ _, [ref, conn_pid, stream_id, stream_pid, reason, _]}
+        {~c"Ranch listener" ++ _, [ref, conn_pid, stream_id, stream_pid, reason, stack]}
       ) do
     extra = [" (connection ", inspect(conn_pid), ", stream id ", inspect(stream_id), ?)]
-    translate_ranch(min_level, ref, extra, stream_pid, reason)
+    translate_ranch(min_level, ref, extra, stream_pid, reason, stack)
   end
 
   def translate(_min_level, _level, _kind, _data) do
@@ -25,7 +25,8 @@ defmodule Plug.Cowboy.Translator do
          _ref,
          extra,
          pid,
-         {reason, {mod, :call, [%Plug.Conn{} = conn, _opts]}}
+         {reason, {mod, :call, [%Plug.Conn{} = conn, _opts]}},
+         _stack
        ) do
     if non_500_exception?(reason) do
       :skip
@@ -40,12 +41,13 @@ defmodule Plug.Cowboy.Translator do
           conn_info(min_level, conn)
           | Exception.format(:exit, reason, [])
         ],
-        crash_reason: reason
+        crash_reason: reason,
+        domain: [:cowboy]
       )
     end
   end
 
-  defp translate_ranch(_min_level, ref, extra, pid, reason) do
+  defp translate_ranch(_min_level, ref, extra, pid, reason, stack) do
     ok(
       [
         "Ranch protocol ",
@@ -54,9 +56,10 @@ defmodule Plug.Cowboy.Translator do
         inspect(ref),
         extra,
         " terminated\n"
-        | Exception.format(:exit, reason, [])
+        | Exception.format(:exit, reason, stack)
       ],
-      crash_reason: reason
+      crash_reason: reason,
+      domain: [:cowboy]
     )
   end
 
