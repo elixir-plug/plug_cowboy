@@ -151,8 +151,8 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.attach_many(
       :start_stop_test,
       [
-        [:cowboy, :stream_handler, :start],
-        [:cowboy, :stream_handler, :stop]
+        [:cowboy, :request, :start],
+        [:cowboy, :request, :stop]
       ],
       fn event, measurements, metadata, test ->
         send(test, {:telemetry, event, measurements, metadata})
@@ -162,12 +162,12 @@ defmodule Plug.Cowboy.ConnTest do
 
     assert {200, _, "TELEMETRY"} = request(:get, "/telemetry?foo=bar")
 
-    assert_receive {:telemetry, [:cowboy, :stream_handler, :start], %{system_time: _},
+    assert_receive {:telemetry, [:cowboy, :request, :start], %{system_time: _},
                     %{stream_id: _, req: req}}
 
     assert req.path == "/telemetry"
 
-    assert_receive {:telemetry, [:cowboy, :stream_handler, :stop], %{duration: duration},
+    assert_receive {:telemetry, [:cowboy, :request, :stop], %{duration: duration},
                     %{response: {:response, _, _, _}}}
 
     duration_ms = System.convert_time_unit(duration, :native, :millisecond)
@@ -182,7 +182,7 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.attach_many(
       :exception_test,
       [
-        [:cowboy, :stream_handler, :exception]
+        [:cowboy, :request, :exception]
       ],
       fn event, measurements, metadata, test ->
         send(test, {:telemetry, event, measurements, metadata})
@@ -192,7 +192,7 @@ defmodule Plug.Cowboy.ConnTest do
 
     request(:get, "/telemetry_exception")
 
-    assert_receive {:telemetry, [:cowboy, :stream_handler, :exception], %{},
+    assert_receive {:telemetry, [:cowboy, :request, :exception], %{},
                     %{
                       kind: :exit,
                       reason: _reason
@@ -204,7 +204,7 @@ defmodule Plug.Cowboy.ConnTest do
   test "fails on large headers" do
     :telemetry.attach(
       :early_error_test,
-      [:cowboy, :stream_handler, :early_error],
+      [:cowboy, :request, :early_error],
       fn name, measurements, metadata, test ->
         send(test, {:event, name, measurements, metadata})
       end,
@@ -218,7 +218,7 @@ defmodule Plug.Cowboy.ConnTest do
              assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
            end) =~ "Cowboy returned 431 because it was unable to parse the request headers"
 
-    assert_receive {:event, [:cowboy, :stream_handler, :early_error],
+    assert_receive {:event, [:cowboy, :request, :early_error],
                     %{
                       system_time: _
                     },

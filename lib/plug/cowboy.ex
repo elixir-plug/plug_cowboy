@@ -242,7 +242,7 @@ defmodule Plug.Cowboy do
 
     :telemetry.attach(
       :plug_cowboy,
-      [:cowboy, :stream_handler, :early_error],
+      [:cowboy, :request, :early_error],
       &handle_event/4,
       nil
     )
@@ -346,7 +346,7 @@ defmodule Plug.Cowboy do
   end
 
   def handle_event(
-        [:cowboy, :stream_handler, :early_error],
+        [:cowboy, :request, :early_error],
         _,
         %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req},
         _
