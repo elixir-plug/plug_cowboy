@@ -31,36 +31,30 @@ defmodule Plug.Cowboy.Translator do
     if non_500_exception?(reason) do
       :skip
     else
-      ok(
-        [
-          inspect(pid),
-          " running ",
-          inspect(mod),
-          extra,
-          " terminated\n",
-          conn_info(min_level, conn)
-          | Exception.format(:exit, reason, [])
-        ],
-        crash_reason: reason,
-        domain: [:cowboy]
-      )
+      {:ok,
+       [
+         inspect(pid),
+         " running ",
+         inspect(mod),
+         extra,
+         " terminated\n",
+         conn_info(min_level, conn)
+         | Exception.format(:exit, reason, [])
+       ], crash_reason: reason, domain: [:cowboy]}
     end
   end
 
   defp translate_ranch(_min_level, ref, extra, pid, reason, stack) do
-    ok(
-      [
-        "Ranch protocol ",
-        inspect(pid),
-        " of listener ",
-        inspect(ref),
-        extra,
-        " terminated\n"
-        | Exception.format(:exit, reason, stack)
-      ],
-      crash_reason: reason,
-      domain: [:cowboy]
-    )
+    {:ok,
+     [
+       "Ranch protocol ",
+       inspect(pid),
+       " of listener ",
+       inspect(ref),
+       extra,
+       " terminated\n"
+       | Exception.format(:exit, reason, stack)
+     ], crash_reason: reason, domain: [:cowboy]}
   end
 
   defp non_500_exception?({%{__exception__: true} = exception, _}) do
@@ -87,14 +81,4 @@ defmodule Plug.Cowboy.Translator do
 
   defp path_to_iodata(path, ""), do: path
   defp path_to_iodata(path, qs), do: [path, ??, qs]
-
-  if Version.match?(System.version(), "~> 1.7") do
-    defp ok(message, metadata) do
-      {:ok, message, metadata}
-    end
-  else
-    defp ok(message, _metadata) do
-      {:ok, message}
-    end
-  end
 end
