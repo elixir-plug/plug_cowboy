@@ -43,34 +43,6 @@ defmodule Plug.Cowboy do
   adapter. See `https/3` for an example and read `Plug.SSL.configure/1` to
   understand about our SSL defaults. When using a unix socket, OTP 21+ is
   required for `Plug.Static` and `Plug.Conn.send_file/3` to behave correctly.
-
-  ## Instrumentation
-
-  PlugCowboy uses the `:telemetry` library for instrumentation. The following
-  span events are published alongside the plug pipeline:
-
-    * `[:plug_adapter, :call, :start]` - dispatched at the beginning of all
-      calls to the pipeline.
-      * Measurements: `%{system_time: System.system_time}`
-      * Metadata: `%{conn: Plug.Conn.t, adapter: :plug_cowboy, plug: module}`
-
-    * `[:plug_adapter, :call, :stop]` - dispatched when a request finishes
-      processing succesfully.
-      * Measurements: `%{duration: native_time}`
-      * Metadata: `%{conn: Plug.Conn.t, adapter: :plug_cowboy, plug: module}`
-
-    * `[:plug_adapter, :call, :exception]` - dispatched whenever there are
-      errors inside the pipeline.
-      * Measurements: `%{duration: native_time}`
-      * Metadata: `%{conn: Plug.Conn.t, adapter: :plug_cowboy, plug: module, kind: kind, reason: reason, stacktrace: stacktrace}`
-
-  Additionally, an event is published when Cowboy sends an early error response
-  before the plug pipeline is called:
-
-    * `[:plug_cowboy, :early_error]` - dispatched when Cowboy sends an early error response.
-      * Measurements: `%{system_time: System.system_time}`
-      * Metadata: `%{reason: term, request: %{method: binary, path: binary}, response: %{status: integer, headers: list, body: binary}}`
-
   """
 
   require Logger

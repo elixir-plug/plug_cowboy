@@ -25,18 +25,6 @@ defmodule Plug.Cowboy.Stream do
   end
 
   def early_error(_stream_id, reason, partial_req, resp, _opts) do
-    {:response, status, headers, body} = resp
-
-    :telemetry.execute(
-      [:plug_cowboy, :early_error],
-      %{system_time: System.system_time()},
-      %{
-        reason: reason,
-        request: %{method: partial_req[:method], path: partial_req[:path]},
-        response: %{status: status, headers: headers, body: body}
-      }
-    )
-
     case reason do
       {:connection_error, :limit_reached, specific_reason} ->
         Logger.error("""

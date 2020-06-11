@@ -4,9 +4,9 @@
 
 PlugCowboy requires Elixir v1.7 or later.
 
-### Incompatible changes
+### Bug fixes
 
-  * The telemetry events added in version v2.2.0 does not work as expected. In particular, there is no guarantee the `stop` and `exception` events will be invoked. Therefore, these events have been removed.
+  * The telemetry events added in version v2.2.0 does not work as expected. The whole v2.2.x branch has been retired in favor of v2.3.0.
 
 ## v2.2.2
 
