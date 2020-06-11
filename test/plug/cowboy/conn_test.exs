@@ -151,8 +151,8 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.attach_many(
       :start_stop_test,
       [
-        [:plug_cowboy, :stream_handler, :start],
-        [:plug_cowboy, :stream_handler, :stop]
+        [:cowboy, :stream_handler, :start],
+        [:cowboy, :stream_handler, :stop]
       ],
       fn event, measurements, metadata, test ->
         send(test, {:telemetry, event, measurements, metadata})
@@ -162,32 +162,18 @@ defmodule Plug.Cowboy.ConnTest do
 
     assert {200, _, "TELEMETRY"} = request(:get, "/telemetry?foo=bar")
 
-    assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :start], %{system_time: _},
-                    %{
-                      host: "127.0.0.1",
-                      method: "GET",
-                      request_path: "/telemetry",
-                      port: 8003,
-                      remote_ip: {127, 0, 0, 1},
-                      scheme: "http",
-                      req_headers: req_headers,
-                      query_string: "foo=bar"
-                    }}
+    assert_receive {:telemetry, [:cowboy, :stream_handler, :start], %{system_time: _},
+                    %{stream_id: _, req: req}}
 
-    assert is_list(req_headers)
+    assert req.path == "/telemetry"
 
-    assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :stop], %{duration: duration},
-                    %{
-                      status: 200,
-                      resp_headers: resp_headers,
-                      body: "TELEMETRY"
-                    }}
+    assert_receive {:telemetry, [:cowboy, :stream_handler, :stop], %{duration: duration},
+                    %{response: {:response, _, _, _}}}
 
     duration_ms = System.convert_time_unit(duration, :native, :millisecond)
 
     assert duration_ms >= 30
     assert duration_ms < 100
-    assert is_list(resp_headers)
 
     :telemetry.detach(:start_stop_test)
   end
@@ -196,7 +182,7 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.attach_many(
       :exception_test,
       [
-        [:plug_cowboy, :stream_handler, :exception]
+        [:cowboy, :stream_handler, :exception]
       ],
       fn event, measurements, metadata, test ->
         send(test, {:telemetry, event, measurements, metadata})
@@ -206,7 +192,7 @@ defmodule Plug.Cowboy.ConnTest do
 
     request(:get, "/telemetry_exception")
 
-    assert_receive {:telemetry, [:plug_cowboy, :stream_handler, :exception], %{},
+    assert_receive {:telemetry, [:cowboy, :stream_handler, :exception], %{},
                     %{
                       kind: :exit,
                       reason: _reason
@@ -218,7 +204,7 @@ defmodule Plug.Cowboy.ConnTest do
   test "fails on large headers" do
     :telemetry.attach(
       :early_error_test,
-      [:plug_cowboy, :early_error],
+      [:cowboy, :stream_handler, :early_error],
       fn name, measurements, metadata, test ->
         send(test, {:event, name, measurements, metadata})
       end,
@@ -232,21 +218,13 @@ defmodule Plug.Cowboy.ConnTest do
              assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
            end) =~ "Cowboy returned 431 because it was unable to parse the request headers"
 
-    assert_receive {:event, [:plug_cowboy, :early_error],
+    assert_receive {:event, [:cowboy, :stream_handler, :early_error],
                     %{
                       system_time: _
                     },
                     %{
                       reason: {:connection_error, :limit_reached, _},
-                      request: %{
-                        method: "GET",
-                        path: "/headers"
-                      },
-                      response: %{
-                        status: 431,
-                        headers: _,
-                        body: _
-                      }
+                      partial_req: %{}
                     }}
 
     :telemetry.detach(:early_error_test)
