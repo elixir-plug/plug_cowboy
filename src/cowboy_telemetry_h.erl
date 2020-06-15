@@ -23,24 +23,30 @@ data(StreamID, IsFin, Data, [Next0 | StartTime]) ->
   {Commands, [Next | StartTime]}.
 
 info(StreamID, Info, [Next0 | StartTime]) ->
-  EndTime = erlang:monotonic_time(),
-  case Info of
-    {response, _, _, _} = Response ->
+  {Commands, Next} = cowboy_stream:info(StreamID, Info, Next0),
+  case Commands of
+    [{response, _, _, _} = Response] ->
+      EndTime = erlang:monotonic_time(),
       telemetry:execute(
         [cowboy, request, stop],
         #{duration => EndTime - StartTime},
         #{stream_id => StreamID, response => Response}
       );
-    {'EXIT', _, Reason} when Reason /= normal ->
-      telemetry:execute(
-        [cowboy, request, exception],
-        #{duration => EndTime - StartTime},
-        #{stream_id => StreamID, kind => exit, reason => Reason}
-      );
+    [{error_response, _, _, _} = ErrorResponse | Commands1] ->
+      EndTime = erlang:monotonic_time(),
+      case lists:keyfind(internal_error, 1, Commands1) of
+        {internal_error, {'EXIT', _, Reason}, _} ->
+          telemetry:execute(
+            [cowboy, request, exception],
+            #{duration => EndTime - StartTime},
+            #{stream_id => StreamID, kind => exit, reason => Reason, error_response => ErrorResponse}
+          );
+        _ ->
+          ignore
+      end;
     _ ->
       ignore
   end,
-  {Commands, Next} = cowboy_stream:info(StreamID, Info, Next0),
   {Commands, [Next | StartTime]}.
 
 terminate(StreamID, Reason, [Next | _]) ->
