@@ -152,7 +152,8 @@ defmodule Plug.Cowboy.ConnTest do
       :start_stop_test,
       [
         [:cowboy, :request, :start],
-        [:cowboy, :request, :stop]
+        [:cowboy, :request, :stop],
+        [:cowboy, :request, :exception]
       ],
       fn event, measurements, metadata, test ->
         send(test, {:telemetry, event, measurements, metadata})
@@ -175,6 +176,8 @@ defmodule Plug.Cowboy.ConnTest do
     assert duration_ms >= 30
     assert duration_ms < 100
 
+    refute_received {:telemetry, [:cowboy, :request, :exception], _, _}
+
     :telemetry.detach(:start_stop_test)
   end
 
@@ -182,6 +185,7 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.attach_many(
       :exception_test,
       [
+        [:cowboy, :request, :start],
         [:cowboy, :request, :exception]
       ],
       fn event, measurements, metadata, test ->
@@ -192,11 +196,10 @@ defmodule Plug.Cowboy.ConnTest do
 
     request(:get, "/telemetry_exception")
 
+    assert_receive {:telemetry, [:cowboy, :request, :start], _, _}
+
     assert_receive {:telemetry, [:cowboy, :request, :exception], %{},
-                    %{
-                      kind: :exit,
-                      reason: _reason
-                    }}
+                    %{kind: :exit, reason: _reason}}
 
     :telemetry.detach(:exception_test)
   end

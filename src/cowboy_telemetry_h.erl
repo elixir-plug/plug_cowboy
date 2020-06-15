@@ -31,7 +31,7 @@ info(StreamID, Info, [Next0 | StartTime]) ->
         #{duration => EndTime - StartTime},
         #{stream_id => StreamID, response => Response}
       );
-    {'EXIT', _, Reason} ->
+    {'EXIT', _, Reason} when Reason /= normal ->
       telemetry:execute(
         [cowboy, request, exception],
         #{duration => EndTime - StartTime},
