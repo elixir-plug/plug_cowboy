@@ -16,13 +16,13 @@ init(StreamID, Req, Opts) ->
     #{stream_id => StreamID, req => Req}
   ),
   {Commands, Next} = cowboy_stream:init(StreamID, Req, Opts),
-  {Commands, [Next, StartTime]}.
+  {Commands, [Next | StartTime]}.
 
-data(StreamID, IsFin, Data, [Next0, StartTime]) ->
+data(StreamID, IsFin, Data, [Next0 | StartTime]) ->
   {Commands, Next} = cowboy_stream:data(StreamID, IsFin, Data, Next0),
-  {Commands, [Next, StartTime]}.
+  {Commands, [Next | StartTime]}.
 
-info(StreamID, Info, [Next0, StartTime]) ->
+info(StreamID, Info, [Next0 | StartTime]) ->
   EndTime = erlang:monotonic_time(),
   case Info of
     {response, _, _, _} = Response ->
@@ -41,9 +41,9 @@ info(StreamID, Info, [Next0, StartTime]) ->
       ignore
   end,
   {Commands, Next} = cowboy_stream:info(StreamID, Info, Next0),
-  {Commands, [Next, StartTime]}.
+  {Commands, [Next | StartTime]}.
 
-terminate(StreamID, Reason, [Next, _]) ->
+terminate(StreamID, Reason, [Next | _]) ->
   cowboy_stream:terminate(StreamID, Reason, Next).
 
 early_error(StreamID, Reason, PartialReq, Resp0, Opts) ->
