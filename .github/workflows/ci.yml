@@ -10,7 +10,7 @@ jobs:
       matrix:
         include:
           - elixir: 1.7.4
-            otp: 19.3.6.13
+            otp: 20.3.8.26
             bionic_version: 20200403
           - elixir: 1.8.2
             otp: 20.3.8.26
@@ -22,7 +22,7 @@ jobs:
             otp: 21.3.8.17
             bionic_version: 20200630
           - elixir: 1.10.4
-            otp: 23.0.3
+            otp: 22.3.4.4
             bionic_version: 20200630
 
     steps:
