@@ -21,6 +21,10 @@ You can then start the adapter with:
 Plug.Cowboy.http MyPlug, []
 ```
 
+### Requirements
+
+Although PlugCowboy supports Elixir 1.7, which is [compatible](https://hexdocs.pm/elixir/compatibility-and-deprecations.html#compatibility-between-elixir-and-erlang-otp) with Erlang/OTP 19–22, [PlugCowboy requires Erlang/OTP 20+](https://github.com/adrianomitre/plug_cowboy/pull/1/checks?check_run_id=912253774).
+
 ## Supervised handlers
 
 The `Plug.Cowboy` module can be started as part of a supervision tree like so:
