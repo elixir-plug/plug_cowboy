@@ -3,7 +3,7 @@ on: [push, pull_request]
 jobs:
   test-elixir:
     runs-on: ubuntu-latest
-    container: hexpm/elixir:${{ matrix.elixir }}-erlang-${{ matrix.otp }}-ubuntu-bionic-${{ matrix.bionic_version }}
+    container: hexpm/elixir:${{ matrix.elixir }}-erlang-${{ matrix.otp }}-alpine-3.12.0
 
     strategy:
       fail-fast: false
@@ -11,19 +11,14 @@ jobs:
         include:
           - elixir: 1.7.4
             otp: 20.3.8.26
-            bionic_version: 20200403
           - elixir: 1.8.2
             otp: 20.3.8.26
-            bionic_version: 20200403
           - elixir: 1.9.4
             otp: 20.3.8.26
-            bionic_version: 20200403
           - elixir: 1.10.4
             otp: 21.3.8.17
-            bionic_version: 20200630
           - elixir: 1.10.4
             otp: 22.3.4.4
-            bionic_version: 20200630
 
     steps:
       - uses: actions/checkout@v2.3.1
