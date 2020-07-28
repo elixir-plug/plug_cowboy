@@ -43,6 +43,21 @@ defmodule Plug.Cowboy do
   adapter. See `https/3` for an example and read `Plug.SSL.configure/1` to
   understand about our SSL defaults. When using a unix socket, OTP 21+ is
   required for `Plug.Static` and `Plug.Conn.send_file/3` to behave correctly.
+
+  ## Instrumentation
+
+  PlugCowboy uses the `:telemetry` library for instrumentation. The following
+  span events are published during each request:
+
+    * `[:cowboy, :request, :start]` - dispatched at the beginning of the request
+    * `[:cowboy, :request, :stop]` - dispatched at the end of the request
+    * `[:cowboy, :request, :exception]` - dispatched at the end of a request that exits
+
+  A single event is published when the request ends with an early error:
+    * `[:cowboy, :request, :early_error]` - dispatched for requests terminated early by Cowboy
+
+  See (`cowboy_telemetry`)[https://github.com/beam-telemetry/cowboy_telemetry#telemetry-events]
+  for more details on the events.
   """
 
   require Logger

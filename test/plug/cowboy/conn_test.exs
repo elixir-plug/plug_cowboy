@@ -204,7 +204,7 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.detach(:exception_test)
   end
 
-  test "fails on large headers" do
+  test "emits telemetry events for cowboy early_error" do
     :telemetry.attach(
       :early_error_test,
       [:cowboy, :request, :early_error],
