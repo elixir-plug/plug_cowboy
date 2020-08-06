@@ -153,7 +153,7 @@ defmodule Plug.CowboyTest do
              %{num_acceptors: 100, max_connections: 16_384, socket_opts: [port: 3000]},
              %{
                env: %{dispatch: @dispatch},
-               stream_handlers: [:cowboy_compress_h, Plug.Cowboy.Stream]
+               stream_handlers: [:cowboy_compress_h, :cowboy_telemetry_h, :cowboy_stream_h]
              }
            ] = args(:http, __MODULE__, [], port: 3000, compress: true)
   end

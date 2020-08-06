@@ -34,6 +34,7 @@ defmodule Plug.Cowboy.MixProject do
     [
       {:plug, "~> 1.7"},
       {:cowboy, "~> 2.7"},
+      {:cowboy_telemetry, "~> 0.2"},
       {:telemetry, "~> 0.4"},
       {:ex_doc, "~> 0.20", only: :docs},
       {:hackney, "~> 1.2.0", only: :test},

@@ -1,5 +1,6 @@
 defmodule Plug.Cowboy.ConnTest do
   use ExUnit.Case, async: true
+  import ExUnit.CaptureLog
 
   alias Plug.Conn
   import Plug.Conn
@@ -133,6 +134,103 @@ defmodule Plug.Cowboy.ConnTest do
 
   test "stores request headers" do
     assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
+  end
+
+  def telemetry(conn) do
+    Process.sleep(30)
+    send_resp(conn, 200, "TELEMETRY")
+  end
+
+  def telemetry_exception(conn) do
+    # send first because of the `rescue` in `call`
+    send_resp(conn, 200, "Fail")
+    raise "BadTimes"
+  end
+
+  test "emits telemetry events for start/stop" do
+    :telemetry.attach_many(
+      :start_stop_test,
+      [
+        [:cowboy, :request, :start],
+        [:cowboy, :request, :stop],
+        [:cowboy, :request, :exception]
+      ],
+      fn event, measurements, metadata, test ->
+        send(test, {:telemetry, event, measurements, metadata})
+      end,
+      self()
+    )
+
+    assert {200, _, "TELEMETRY"} = request(:get, "/telemetry?foo=bar")
+
+    assert_receive {:telemetry, [:cowboy, :request, :start], %{system_time: _},
+                    %{streamid: _, req: req}}
+
+    assert req.path == "/telemetry"
+
+    assert_receive {:telemetry, [:cowboy, :request, :stop], %{duration: duration},
+                    %{streamid: _, req: req}}
+
+    duration_ms = System.convert_time_unit(duration, :native, :millisecond)
+
+    assert duration_ms >= 30
+    assert duration_ms < 100
+
+    refute_received {:telemetry, [:cowboy, :request, :exception], _, _}
+
+    :telemetry.detach(:start_stop_test)
+  end
+
+  test "emits telemetry events for exception" do
+    :telemetry.attach_many(
+      :exception_test,
+      [
+        [:cowboy, :request, :start],
+        [:cowboy, :request, :exception]
+      ],
+      fn event, measurements, metadata, test ->
+        send(test, {:telemetry, event, measurements, metadata})
+      end,
+      self()
+    )
+
+    request(:get, "/telemetry_exception")
+
+    assert_receive {:telemetry, [:cowboy, :request, :start], _, _}
+
+    assert_receive {:telemetry, [:cowboy, :request, :exception], %{},
+                    %{kind: :exit, reason: _reason, stacktrace: stacktrace}}
+
+    :telemetry.detach(:exception_test)
+  end
+
+  test "emits telemetry events for cowboy early_error" do
+    :telemetry.attach(
+      :early_error_test,
+      [:cowboy, :request, :early_error],
+      fn name, measurements, metadata, test ->
+        send(test, {:event, name, measurements, metadata})
+      end,
+      self()
+    )
+
+    assert capture_log(fn ->
+             cookie = "bar=" <> String.duplicate("a", 8_000_000)
+             response = request(:get, "/headers", [{"cookie", cookie}])
+             assert match?({431, _, _}, response) or match?({:error, :closed}, response)
+             assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
+           end) =~ "Cowboy returned 431 because it was unable to parse the request headers"
+
+    assert_receive {:event, [:cowboy, :request, :early_error],
+                    %{
+                      system_time: _
+                    },
+                    %{
+                      reason: {:connection_error, :limit_reached, _},
+                      partial_req: %{}
+                    }}
+
+    :telemetry.detach(:early_error_test)
   end
 
   def send_200(conn) do
