@@ -58,6 +58,9 @@ defmodule Plug.Cowboy do
 
   See (`cowboy_telemetry`)[https://github.com/beam-telemetry/cowboy_telemetry#telemetry-events]
   for more details on the events.
+
+  To opt-out of this default instrumentation, you can manually configure
+  cowboy with the option `stream_handlers: [:cowboy_stream_h]`.
   """
 
   require Logger
