@@ -5,8 +5,8 @@ defmodule Plug.Cowboy.Drainer do
   When starting `Plug.Cowboy` in a supervision tree, it will create a listener that receives
   requests and creates a connection process to handle that request. During shutdown, a
   `Plug.Cowboy` process will immediately exit, closing the listener and any open connections
-  that are still being served. In most cases, it is desireable to allow connections to
-  complete before shutting down.
+  that are still being served. However, in most cases, it is desirable to allow connections
+  to complete before shutting down.
 
   This module provides a process that during shutdown will close listeners and wait
   for connections to complete. It should be placed after other supervised processes that
