@@ -169,7 +169,7 @@ defmodule Plug.Cowboy.ConnTest do
     assert req.path == "/telemetry"
 
     assert_receive {:telemetry, [:cowboy, :request, :stop], %{duration: duration},
-                    %{streamid: _, req: req}}
+                    %{streamid: _, req: ^req}}
 
     duration_ms = System.convert_time_unit(duration, :native, :millisecond)
 
@@ -199,7 +199,7 @@ defmodule Plug.Cowboy.ConnTest do
     assert_receive {:telemetry, [:cowboy, :request, :start], _, _}
 
     assert_receive {:telemetry, [:cowboy, :request, :exception], %{},
-                    %{kind: :exit, reason: _reason, stacktrace: stacktrace}}
+                    %{kind: :exit, reason: _reason, stacktrace: _stacktrace}}
 
     :telemetry.detach(:exception_test)
   end
