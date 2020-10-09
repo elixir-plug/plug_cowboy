@@ -42,7 +42,7 @@ defmodule Plug.Cowboy.DrainerTest do
 
     # Draining started, but one request still open
     assert_receive {:listener_status, :suspended, suspended_timestamp}
-    assert_receive {:conn, 1, open_request_timestamp}
+    assert_receive {:conn, 1, open_request_timestamp}, 500
 
     # Request completed
     assert_receive {:request_body, "ok", complete_request_timestamp}
