@@ -1,6 +1,7 @@
 # PlugCowboy
 
-[![Build Status](https://travis-ci.org/elixir-plug/plug_cowboy.svg?branch=master)](https://travis-ci.org/elixir-plug/plug_cowboy)
+[![Hex.pm Version](https://img.shields.io/hexpm/v/plug_cowboy.svg)](https://hex.pm/packages/plug_cowboy)
+[![Build Status](https://github.com/elixir-plug/plug_cowboy/workflows/CI/badge.svg)](https://github.com/elixir-plug/plug_cowboy/actions?query=workflow%3ACI)
 
 A Plug Adapter for the Erlang [Cowboy][cowboy] web server.
 
