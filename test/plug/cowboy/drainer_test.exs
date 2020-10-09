@@ -7,7 +7,7 @@ defmodule Plug.Cowboy.DrainerTest do
 
   def call(conn, []) do
     conn = Plug.Conn.send_chunked(conn, 200)
-    Process.sleep(30)
+    Process.sleep(500)
     {:ok, conn} = Plug.Conn.chunk(conn, "ok")
     conn
   end
