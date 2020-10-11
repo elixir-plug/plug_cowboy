@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.4.0
+
+### Bug fixes
+
+  * Add [cowboy_telemetry](https://github.com/beam-telemetry/cowboy_telemetry/) as a dependency and enable it by default
+
 ## v2.3.0
 
 PlugCowboy requires Elixir v1.7 or later.
