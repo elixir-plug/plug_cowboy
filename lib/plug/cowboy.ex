@@ -4,6 +4,8 @@ defmodule Plug.Cowboy do
 
   ## Options
 
+    * `:net` - If using `:inet` (IPv4 only - the default) or `:inet6` (IPv6)
+
     * `:ip` - the ip to bind the server to.
       Must be either a tuple in the format `{a, b, c, d}` with each value in `0..255` for IPv4,
       or a tuple in the format `{a, b, c, d, e, f, g, h}` with each value in `0..65535` for IPv6,
@@ -34,15 +36,21 @@ defmodule Plug.Cowboy do
       see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
 
     * `:transport_options` - A keyword list specifying transport options,
-      see [ranch docs](https://ninenines.eu/docs/en/ranch/1.6/manual/ranch/).
+      see [Ranch docs](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch/).
       By default `:num_acceptors` will be set to `100` and `:max_connections`
       to `16_384`.
 
-  All other options are given as `:socket_opts` to the underlying transport.
-  When running on HTTPS, any SSL configuration should be given directly to the
-  adapter. See `https/3` for an example and read `Plug.SSL.configure/1` to
-  understand about our SSL defaults. When using a unix socket, OTP 21+ is
-  required for `Plug.Static` and `Plug.Conn.send_file/3` to behave correctly.
+  All other options given at the top level must configure the underlying
+  socket. For HTTP connections, those options are listed under
+  [`ranch_tcp`](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch_tcp/).
+
+  For HTTPS (SSL) connections, those options are described in
+  [`ranch_ssl`](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch_ssl/).
+  See `https/3` for an example and read `Plug.SSL.configure/1` to
+  understand about our SSL defaults.
+
+  When using a unix socket, OTP 21+ is required for `Plug.Static` and
+  `Plug.Conn.send_file/3` to behave correctly.
 
   ## Instrumentation
 
@@ -134,20 +142,6 @@ defmodule Plug.Cowboy do
   def shutdown(ref) do
     :cowboy.stop_listener(ref)
   end
-
-  @transport_options [
-    :connection_type,
-    :handshake_timeout,
-    :max_connections,
-    :logger,
-    :num_acceptors,
-    :shutdown,
-    :socket,
-    :socket_opts,
-
-    # Special cases supported by plug but not ranch
-    :acceptors
-  ]
 
   @doc """
   A function for starting a Cowboy2 server under Elixir v1.5+ supervisors.
@@ -274,22 +268,13 @@ defmodule Plug.Cowboy do
     protocol_options = Map.merge(%{env: %{dispatch: dispatch}}, protocol_and_extra_options)
     {transport_options, socket_options} = Keyword.pop(opts, :transport_options, [])
 
-    option_keys = Keyword.keys(socket_options)
-
-    for opt <- @transport_options, opt in option_keys do
-      option_deprecation_warning(opt)
-    end
-
-    {num_acceptors, socket_options} = Keyword.pop(socket_options, :num_acceptors, 100)
-    {num_acceptors, socket_options} = Keyword.pop(socket_options, :acceptors, num_acceptors)
-    {max_connections, socket_options} = Keyword.pop(socket_options, :max_connections, 16_384)
-
-    socket_options = non_keyword_opts ++ socket_options
+    {net, socket_options} = Keyword.pop(socket_options, :net)
+    socket_options = List.wrap(net) ++ non_keyword_opts ++ socket_options
 
     transport_options =
       transport_options
-      |> Keyword.put_new(:num_acceptors, num_acceptors)
-      |> Keyword.put_new(:max_connections, max_connections)
+      |> Keyword.put_new(:num_acceptors, 100)
+      |> Keyword.put_new(:max_connections, 16_384)
       |> Keyword.update(
         :socket_opts,
         socket_options,
@@ -374,19 +359,5 @@ defmodule Plug.Cowboy do
 
   defp format_peer({addr, port}) do
     "#{:inet_parse.ntoa(addr)}:#{port}"
-  end
-
-  defp option_deprecation_warning(:acceptors),
-    do: option_deprecation_warning(:acceptors, :num_acceptors)
-
-  defp option_deprecation_warning(option),
-    do: option_deprecation_warning(option, option)
-
-  defp option_deprecation_warning(option, expected_option) do
-    warning =
-      "using :#{option} in options is deprecated. Please pass " <>
-        ":#{expected_option} to the :transport_options keyword list instead"
-
-    IO.warn(warning)
   end
 end

@@ -2,7 +2,6 @@ defmodule Plug.CowboyTest do
   use ExUnit.Case, async: true
 
   import Plug.Cowboy
-  import ExUnit.CaptureIO
 
   def init([]) do
     [foo: :bar]
@@ -119,34 +118,6 @@ defmodule Plug.CowboyTest do
            ] = args(:http, __MODULE__, [], port: 3000, protocol_options: [timeout: 30_000])
   end
 
-  test "builds args with num_acceptors option writes a deprecation" do
-    output =
-      capture_io(:stderr, fn ->
-        assert [
-                 Plug.CowboyTest.HTTP,
-                 %{max_connections: 16_384, socket_opts: [port: 3000], num_acceptors: 5},
-                 %{env: %{dispatch: @dispatch}}
-               ] = args(:http, __MODULE__, [], port: 3000, compress: true, num_acceptors: 5)
-      end)
-
-    assert output =~ "using :num_acceptors in options is deprecated"
-    assert output =~ "Please pass :num_acceptors"
-  end
-
-  test "build args using acceptors has a custom deprecation warning" do
-    output =
-      capture_io(:stderr, fn ->
-        assert [
-                 Plug.CowboyTest.HTTP,
-                 %{max_connections: 16_384, socket_opts: [port: 3000], num_acceptors: 5},
-                 %{env: %{dispatch: @dispatch}}
-               ] = args(:http, __MODULE__, [], port: 3000, compress: true, acceptors: 5)
-      end)
-
-    assert output =~ "using :acceptors in options is deprecated"
-    assert output =~ "Please pass :num_acceptors"
-  end
-
   test "builds args with compress option" do
     assert [
              Plug.CowboyTest.HTTP,
@@ -156,6 +127,17 @@ defmodule Plug.CowboyTest do
                stream_handlers: [:cowboy_compress_h, :cowboy_telemetry_h, :cowboy_stream_h]
              }
            ] = args(:http, __MODULE__, [], port: 3000, compress: true)
+  end
+
+  test "builds args with net option" do
+    assert [
+             Plug.CowboyTest.HTTP,
+             %{num_acceptors: 100, max_connections: 16_384, socket_opts: [:inet6, port: 3000]},
+             %{
+               env: %{dispatch: @dispatch},
+               stream_handlers: [:cowboy_telemetry_h, :cowboy_stream_h]
+             }
+           ] = args(:http, __MODULE__, [], port: 3000, net: :inet6)
   end
 
   test "builds args with transport options" do

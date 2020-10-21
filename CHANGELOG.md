@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.0
+
+### Enhancements
+
+  * Support the `:net` option so developers can work with keyword lists
+  * Remove previously deprecated options
+
 ## v2.4.0
 
 ### Bug fixes
