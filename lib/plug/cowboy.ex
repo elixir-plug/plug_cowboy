@@ -10,8 +10,9 @@ defmodule Plug.Cowboy do
       Must be either a tuple in the format `{a, b, c, d}` with each value in `0..255` for IPv4,
       or a tuple in the format `{a, b, c, d, e, f, g, h}` with each value in `0..65535` for IPv6,
       or a tuple in the format `{:local, path}` for a unix socket at the given `path`.
-      If you set both `:net` and `:ip` options, make sure they are compatible
-      (i.e. give a IPv4 for `:inet` and IPv6 for `:inet6`)
+      If you set an IPv6, the `:net` option will be automatically set to `:inet6`.
+      If both `:net` and `:ip` options are given, make sure they are compatible
+      (i.e. give a IPv4 for `:inet` and IPv6 for `:inet6`).
 
     * `:port` - the port to run the server.
       Defaults to 4000 (http) and 4040 (https).
