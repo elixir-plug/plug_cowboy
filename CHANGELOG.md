@@ -7,6 +7,12 @@
   * Support the `:net` option so developers can work with keyword lists
   * Remove previously deprecated options
 
+## v2.4.1
+
+### Bug fixes
+
+  * Properly format linked exits
+
 ## v2.4.0
 
 ### Bug fixes
