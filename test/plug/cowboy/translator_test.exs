@@ -15,6 +15,10 @@ defmodule Plug.Cowboy.TranslatorTest do
     raise "oops"
   end
 
+  def call(%{path_info: ["linked"]}, _opts) do
+    fn -> GenServer.call(:i_dont_exist, :ok) end |> Task.async() |> Task.await()
+  end
+
   test "ranch/cowboy 500 logs" do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9001)
 
@@ -44,5 +48,19 @@ defmodule Plug.Cowboy.TranslatorTest do
     refute output =~ "Server: 127.0.0.1:9002 (http)"
     refute output =~ "Request: GET /"
     refute output =~ "** (exit) an exception was raised:"
+  end
+
+  test "ranch/cowboy linked logs" do
+    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9003)
+
+    output =
+      capture_log(fn ->
+        :hackney.get("http://127.0.0.1:9003/linked", [], "", [])
+        Plug.Cowboy.shutdown(__MODULE__.HTTP)
+      end)
+
+    assert output =~ ~r"Ranch protocol #PID<0\.\d+\.0> of listener Plug\.Cowboy\.TranslatorTest\.HTTP \(.*\) terminated"
+    assert output =~ "exited in: GenServer.call"
+    assert output =~ "** (EXIT) no process"
   end
 end
