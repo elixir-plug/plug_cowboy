@@ -53,7 +53,7 @@ defmodule Plug.Cowboy.Translator do
        inspect(ref),
        extra,
        " terminated\n"
-       | Exception.format(:exit, reason, stack)
+       | Exception.format_exit({reason, stack})
      ], crash_reason: reason, domain: [:cowboy]}
   end
 
