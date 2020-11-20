@@ -59,7 +59,9 @@ defmodule Plug.Cowboy.TranslatorTest do
         Plug.Cowboy.shutdown(__MODULE__.HTTP)
       end)
 
-    assert output =~ ~r"Ranch protocol #PID<0\.\d+\.0> of listener Plug\.Cowboy\.TranslatorTest\.HTTP \(.*\) terminated"
+    assert output =~
+             ~r"Ranch protocol #PID<0\.\d+\.0> of listener Plug\.Cowboy\.TranslatorTest\.HTTP \(.*\) terminated"
+
     assert output =~ "exited in: GenServer.call"
     assert output =~ "** (EXIT) no process"
   end
