@@ -40,7 +40,7 @@ defmodule Plug.Cowboy.Translator do
          " terminated\n",
          conn_info(min_level, conn)
          | Exception.format(:exit, reason, [])
-       ], crash_reason: reason, domain: [:cowboy]}
+       ], conn: conn, crash_reason: reason, domain: [:cowboy]}
     end
   end
 

@@ -19,6 +19,12 @@ defmodule Plug.Cowboy.TranslatorTest do
     fn -> GenServer.call(:i_dont_exist, :ok) end |> Task.async() |> Task.await()
   end
 
+  @metadata_log_opts format: {__MODULE__, :metadata}, metadata: :all
+
+  def metadata(_log_level, _message, _timestamp, metadata) do
+    inspect(metadata, limit: :infinity)
+  end
+
   test "ranch/cowboy 500 logs" do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9001)
 
@@ -64,5 +70,32 @@ defmodule Plug.Cowboy.TranslatorTest do
 
     assert output =~ "exited in: GenServer.call"
     assert output =~ "** (EXIT) no process"
+  end
+
+  test "metadata in ranch/cowboy 500 logs" do
+    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9004)
+
+    metadata =
+      capture_log(@metadata_log_opts, fn ->
+        :hackney.get("http://127.0.0.1:9004/error", [], "", [])
+        Plug.Cowboy.shutdown(__MODULE__.HTTP)
+      end)
+
+    assert metadata =~ "conn: %Plug.Conn{"
+    assert metadata =~ "crash_reason:"
+    assert metadata =~ "domain: [:cowboy]"
+  end
+
+  test "metadata in ranch/cowboy lined logs" do
+    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9005)
+
+    metadata =
+      capture_log(@metadata_log_opts, fn ->
+        :hackney.get("http://127.0.0.1:9005/linked", [], "", [])
+        Plug.Cowboy.shutdown(__MODULE__.HTTP)
+      end)
+
+    assert metadata =~ "crash_reason:"
+    assert metadata =~ "domain: [:cowboy]"
   end
 end
