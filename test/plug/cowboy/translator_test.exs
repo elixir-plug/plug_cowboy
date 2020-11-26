@@ -19,7 +19,7 @@ defmodule Plug.Cowboy.TranslatorTest do
     fn -> GenServer.call(:i_dont_exist, :ok) end |> Task.async() |> Task.await()
   end
 
-  @metadata_log_opts format: {__MODULE__, :metadata}, metadata: :all
+  @metadata_log_opts format: {__MODULE__, :metadata}, metadata: [:conn, :crash_reason, :domain]
 
   def metadata(_log_level, _message, _timestamp, metadata) do
     inspect(metadata, limit: :infinity)
