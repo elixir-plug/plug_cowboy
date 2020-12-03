@@ -12,7 +12,7 @@ defmodule Plug.Cowboy.MixProject do
       deps: deps(),
       package: package(),
       description: @description,
-      name: "PlugCowboy",
+      name: "Plug.Cowboy",
       docs: [
         main: "Plug.Cowboy",
         source_ref: "v#{@version}",

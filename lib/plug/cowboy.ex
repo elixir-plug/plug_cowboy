@@ -57,7 +57,7 @@ defmodule Plug.Cowboy do
 
   ## Instrumentation
 
-  PlugCowboy uses the `:telemetry` library for instrumentation. The following
+  Plug.Cowboy uses the `:telemetry` library for instrumentation. The following
   span events are published during each request:
 
     * `[:cowboy, :request, :start]` - dispatched at the beginning of the request

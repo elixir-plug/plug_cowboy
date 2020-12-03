@@ -1,4 +1,4 @@
-# PlugCowboy
+# Plug.Cowboy
 
 [![Hex.pm Version](https://img.shields.io/hexpm/v/plug_cowboy.svg)](https://hex.pm/packages/plug_cowboy)
 [![Build Status](https://github.com/elixir-plug/plug_cowboy/workflows/CI/badge.svg)](https://github.com/elixir-plug/plug_cowboy/actions?query=workflow%3ACI)
@@ -50,7 +50,7 @@ end
 
 ## Contributing
 
-We welcome everyone to contribute to PlugCowboy and help us tackle existing issues!
+We welcome everyone to contribute to Plug.Cowboy and help us tackle existing issues!
 
 Use the [issue tracker][issues] for bug reports or feature requests. You may also start a discussion on the [mailing list][ML] or the **[#elixir-lang][IRC]** channel on [Freenode][freenode] IRC. Open a [pull request][pulls] when you are ready to contribute.
 
@@ -62,7 +62,7 @@ Finally, remember all interactions in our official spaces follow our [Code of Co
 
 ## License
 
-PlugCowboy source code is released under Apache License 2.0.
+Plug.Cowboy source code is released under Apache License 2.0.
 Check LICENSE file for more information.
 
   [issues]: https://github.com/elixir-plug/plug/issues

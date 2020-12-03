@@ -21,7 +21,7 @@
 
 ## v2.3.0
 
-PlugCowboy requires Elixir v1.7 or later.
+Plug.Cowboy requires Elixir v1.7 or later.
 
 ### Bug fixes
 
