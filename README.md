@@ -3,7 +3,8 @@
 [![Hex.pm Version](https://img.shields.io/hexpm/v/plug_cowboy.svg)](https://hex.pm/packages/plug_cowboy)
 [![Build Status](https://github.com/elixir-plug/plug_cowboy/workflows/CI/badge.svg)](https://github.com/elixir-plug/plug_cowboy/actions?query=workflow%3ACI)
 
-A Plug Adapter for the Erlang [Cowboy][cowboy] web server.
+A Plug Adapter for the Erlang [Cowboy](https://github.com/ninenines/cowboy
+) web server.
 
 ## Installation
 
@@ -16,6 +17,7 @@ def deps do
   ]
 end
 ```
+
 You can then start the adapter with:
 
 ```elixir
@@ -52,24 +54,11 @@ end
 
 We welcome everyone to contribute to Plug.Cowboy and help us tackle existing issues!
 
-Use the [issue tracker][issues] for bug reports or feature requests. You may also start a discussion on the [mailing list][ML] or the **[#elixir-lang][IRC]** channel on [Freenode][freenode] IRC. Open a [pull request][pulls] when you are ready to contribute.
-
-When submitting a pull request you should not update the `CHANGELOG.md`.
-
-If you are planning to contribute documentation, [please check our best practices for writing documentation][writing-docs].
-
-Finally, remember all interactions in our official spaces follow our [Code of Conduct][code-of-conduct].
+- Use the [issue tracker](https://github.com/elixir-plug/plug/issues) for bug reports or feature requests.
+- Open a [pull request](https://github.com/elixir-plug/plug/pulls) when you are ready to contribute.
+- Do not update the `CHANGELOG.md` when submitting a pull request.
 
 ## License
 
 Plug.Cowboy source code is released under Apache License 2.0.
 Check the [LICENSE](./LICENSE) file for more information.
-
-  [issues]: https://github.com/elixir-plug/plug/issues
-  [pulls]: https://github.com/elixir-plug/plug/pulls
-  [ML]: https://groups.google.com/group/elixir-lang-core
-  [code-of-conduct]: https://github.com/elixir-lang/elixir/blob/master/CODE_OF_CONDUCT.md
-  [writing-docs]: https://hexdocs.pm/elixir/writing-documentation.html
-  [IRC]: https://webchat.freenode.net/?channels=#elixir-lang
-  [freenode]: https://freenode.net/
-  [cowboy]: https://github.com/ninenines/cowboy
