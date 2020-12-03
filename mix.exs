@@ -12,7 +12,7 @@ defmodule Plug.Cowboy.MixProject do
       deps: deps(),
       package: package(),
       description: @description,
-      name: "PlugCowboy",
+      name: "Plug.Cowboy",
       docs: [
         main: "Plug.Cowboy",
         source_ref: "v#{@version}",
@@ -45,7 +45,7 @@ defmodule Plug.Cowboy.MixProject do
 
   defp package do
     %{
-      licenses: ["Apache 2"],
+      licenses: ["Apache-2.0"],
       maintainers: ["José Valim", "Gary Rennie"],
       links: %{"GitHub" => "https://github.com/elixir-plug/plug_cowboy"}
     }
