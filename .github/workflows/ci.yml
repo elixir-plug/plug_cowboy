@@ -7,7 +7,7 @@ jobs:
     name: Format and compile with warnings as errors
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install OTP and Elixir
         uses: actions/setup-elixir@v1
@@ -42,7 +42,7 @@ jobs:
           - erlang: 20.3.1
             elixir: 1.7.4
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install OTP and Elixir
         uses: actions/setup-elixir@v1
