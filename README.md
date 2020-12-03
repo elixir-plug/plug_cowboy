@@ -54,8 +54,8 @@ end
 
 We welcome everyone to contribute to Plug.Cowboy and help us tackle existing issues!
 
-- Use the [issue tracker](https://github.com/elixir-plug/plug/issues) for bug reports or feature requests.
-- Open a [pull request](https://github.com/elixir-plug/plug/pulls) when you are ready to contribute.
+- Use the [issue tracker](https://github.com/elixir-plug/plug_cowboy/issues) for bug reports or feature requests.
+- Open a [pull request](https://github.com/elixir-plug/plug_cowboy/pulls) when you are ready to contribute.
 - Do not update the `CHANGELOG.md` when submitting a pull request.
 
 ## License
