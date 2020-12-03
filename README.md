@@ -63,7 +63,7 @@ Finally, remember all interactions in our official spaces follow our [Code of Co
 ## License
 
 Plug.Cowboy source code is released under Apache License 2.0.
-Check LICENSE file for more information.
+Check the [LICENSE](./LICENSE) file for more information.
 
   [issues]: https://github.com/elixir-plug/plug/issues
   [pulls]: https://github.com/elixir-plug/plug/pulls
