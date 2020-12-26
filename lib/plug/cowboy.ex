@@ -67,7 +67,7 @@ defmodule Plug.Cowboy do
   A single event is published when the request ends with an early error:
     * `[:cowboy, :request, :early_error]` - dispatched for requests terminated early by Cowboy
 
-  See (`cowboy_telemetry`)[https://github.com/beam-telemetry/cowboy_telemetry#telemetry-events]
+  See [`cowboy_telemetry`](https://github.com/beam-telemetry/cowboy_telemetry#telemetry-events)
   for more details on the events.
 
   To opt-out of this default instrumentation, you can manually configure
