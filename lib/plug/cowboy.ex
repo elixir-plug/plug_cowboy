@@ -13,6 +13,12 @@ defmodule Plug.Cowboy do
       If you set an IPv6, the `:net` option will be automatically set to `:inet6`.
       If both `:net` and `:ip` options are given, make sure they are compatible
       (i.e. give a IPv4 for `:inet` and IPv6 for `:inet6`).
+      Also, see "Loopback vs Public IP Addresses".
+
+    * `:ipv6_v6only` - a boolean value. If false, and if you bind to an IPv6
+      address, Cowboy's underlying `:gen_tcp` call will also listen on IPv4.
+      For example, binding to `{0, 0, 0, 0, 0, 0, 0, 0}` will also bind to
+      `{0, 0, 0, 0}`. Defaults to false.
 
     * `:port` - the port to run the server.
       Defaults to 4000 (http) and 4040 (https).
@@ -54,6 +60,33 @@ defmodule Plug.Cowboy do
 
   When using a unix socket, OTP 21+ is required for `Plug.Static` and
   `Plug.Conn.send_file/3` to behave correctly.
+
+  ## Loopback vs Public IP Addresses
+
+  Should your application bind to a loopback address, such as `::1` (IPv6) or
+  `127.0.0.1` (IPv4), or a public one, such as `::0` (IPv6) or `0.0.0.0`
+  (IPv4)? It depends on how (and whether) you want it to be reachable from
+  other machines.
+
+  Loopback addresses are only reachable from the same host (`localhost` is
+  usually configured to resolve to a loopback address).
+  You may wish to use one if:
+
+  - Your app is running in a development environment (such as your laptop) and
+  you don't want others on the same network to access it.
+  - Your app is running in production, but behind a reverse proxy. For example,
+  you might have Nginx bound to a public address and serving HTTPS, but
+  forwarding the traffic to your application running on the same host. In that
+  case, having your app bind to the loopback address means that Nginx can reach
+  it, but outside traffic can only reach it via Nginx.
+
+  Public addresses are reachable from other hosts. You may wish to use one if:
+
+  - Your app is running in a container. In this case, its loopback address is
+  reachable only from within the container; to be accessible from outside the
+  container, it needs to bind to a public IP address.
+  - Your app is running in production without a reverse proxy, using Cowboy's
+  SSL support.
 
   ## Instrumentation
 
