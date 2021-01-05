@@ -15,11 +15,6 @@ defmodule Plug.Cowboy do
       (i.e. give a IPv4 for `:inet` and IPv6 for `:inet6`).
       Also, see "Loopback vs Public IP Addresses".
 
-    * `:ipv6_v6only` - a boolean value. If false, and if you bind to an IPv6
-      address, Cowboy's underlying `:gen_tcp` call will also listen on IPv4.
-      For example, binding to `{0, 0, 0, 0, 0, 0, 0, 0}` will also bind to
-      `{0, 0, 0, 0}`. Defaults to false.
-
     * `:port` - the port to run the server.
       Defaults to 4000 (http) and 4040 (https).
       Must be 0 when `:ip` is a `{:local, path}` tuple.
@@ -52,6 +47,8 @@ defmodule Plug.Cowboy do
   All other options given at the top level must configure the underlying
   socket. For HTTP connections, those options are listed under
   [`ranch_tcp`](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch_tcp/).
+  For example, you can set `:ipv6_v6only` to true if you want to bind only
+  on IPv6 addresses.
 
   For HTTPS (SSL) connections, those options are described in
   [`ranch_ssl`](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch_ssl/).
