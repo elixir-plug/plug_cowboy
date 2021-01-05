@@ -15,6 +15,11 @@ defmodule Plug.Cowboy do
       (i.e. give a IPv4 for `:inet` and IPv6 for `:inet6`).
       Also, see "Loopback vs Public IP Addresses".
 
+    * `:ipv6_v6only` - a boolean value. If false, and if you bind to an IPv6
+      address, Cowboy's underlying `:gen_tcp` call will also listen on IPv4.
+      For example, binding to `{0, 0, 0, 0, 0, 0, 0, 0}` will also bind to
+      `{0, 0, 0, 0}`. Defaults to false.
+
     * `:port` - the port to run the server.
       Defaults to 4000 (http) and 4040 (https).
       Must be 0 when `:ip` is a `{:local, path}` tuple.
@@ -60,16 +65,15 @@ defmodule Plug.Cowboy do
 
   Should your application bind to a loopback address, such as `::1` (IPv6) or
   `127.0.0.1` (IPv4), or a public one, such as `::0` (IPv6) or `0.0.0.0`
-  (IPv4)?
-  It depends on how (and whether) you want it to be reachable from other
-  machines.
+  (IPv4)? It depends on how (and whether) you want it to be reachable from
+  other machines.
 
   Loopback addresses are only reachable from the same host (`localhost` is
   usually configured to resolve to a loopback address).
   You may wish to use one if:
 
-  - Your app is running in a development environment (eg, your laptop) and you
-  don't want others on the same network to access it.
+  - Your app is running in a development environment (such as your laptop) and
+  you don't want others on the same network to access it.
   - Your app is running in production, but behind a reverse proxy. For example,
   you might have Nginx bound to a public address and serving HTTPS, but
   forwarding the traffic to your application running on the same host. In that
