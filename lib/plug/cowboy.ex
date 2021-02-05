@@ -223,12 +223,18 @@ defmodule Plug.Cowboy do
         :https ->
           %{socket_opts: socket_opts} = transport_opts
 
-          socket_opts =
-            socket_opts
-            |> Keyword.put_new(:next_protocols_advertised, ["h2", "http/1.1"])
-            |> Keyword.put_new(:alpn_preferred_protocols, ["h2", "http/1.1"])
+          updated_opts =
+            if List.keyfind(socket_opts, :versions, 0) == {:versions, [:"tlsv1.3"]} do
+              socket_opts
+              |> Keyword.delete(:next_protocols_advertised)
+              |> Keyword.delete(:alpn_preferred_protocols)
+            else
+              socket_opts
+              |> Keyword.put_new(:next_protocols_advertised, ["h2", "http/1.1"])
+              |> Keyword.put_new(:alpn_preferred_protocols, ["h2", "http/1.1"])
+            end
 
-          {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: socket_opts}}
+          {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: updated_opts}}
       end
 
     {id, start, restart, shutdown, type, modules} =
