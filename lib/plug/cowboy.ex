@@ -225,6 +225,9 @@ defmodule Plug.Cowboy do
 
           updated_opts =
             if List.keyfind(socket_opts, :versions, 0) == {:versions, [:"tlsv1.3"]} do
+              # next_protocols_advertised and alpn_preferred_protocols options are not supported
+              # by the OTP SSL module when earlier version of TLS are not being used.
+              # (i.e. TLS1.2 or earlier versions must be specified as it's not supported in TLS1.3)
               socket_opts
               |> Keyword.delete(:next_protocols_advertised)
               |> Keyword.delete(:alpn_preferred_protocols)
