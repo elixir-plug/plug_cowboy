@@ -231,10 +231,12 @@ defmodule Plug.Cowboy do
           {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: socket_opts}}
       end
 
-    {id, start, restart, shutdown, type, modules} =
-      :ranch.child_spec(ref, ranch_module, transport_opts, cowboy_protocol, proto_opts)
-
-    %{id: id, start: start, restart: restart, shutdown: shutdown, type: type, modules: modules}
+    case :ranch.child_spec(ref, ranch_module, transport_opts, cowboy_protocol, proto_opts) do
+      {id, start, restart, shutdown, type, modules} ->
+        %{id: id, start: start, restart: restart, shutdown: shutdown, type: type, modules: modules}
+      child_spec when is_map(child_spec) ->
+        child_spec
+    end
   end
 
   ## Helpers
