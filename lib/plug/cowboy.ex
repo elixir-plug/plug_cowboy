@@ -234,6 +234,7 @@ defmodule Plug.Cowboy do
     case :ranch.child_spec(ref, ranch_module, transport_opts, cowboy_protocol, proto_opts) do
       {id, start, restart, shutdown, type, modules} ->
         %{id: id, start: start, restart: restart, shutdown: shutdown, type: type, modules: modules}
+
       child_spec when is_map(child_spec) ->
         child_spec
     end
