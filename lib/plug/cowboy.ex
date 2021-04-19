@@ -158,7 +158,7 @@ defmodule Plug.Cowboy do
 
   Besides the options described in the module documentation,
   this function sets defaults and accepts all options defined
-  in `Plug.SSL.configure/2`.
+  in `Plug.SSL.configure/1`.
 
   ## Example
 
