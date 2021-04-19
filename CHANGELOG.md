@@ -4,6 +4,8 @@
 
 ### Enhancements
 
+  * Return `:conn` as Logger metadata on translator
+  * Support Ranch 2.0
   * Support the `:net` option so developers can work with keyword lists
   * Remove previously deprecated options
 
