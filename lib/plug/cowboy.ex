@@ -55,8 +55,22 @@ defmodule Plug.Cowboy do
   See `https/3` for an example and read `Plug.SSL.configure/1` to
   understand about our SSL defaults.
 
-  When using a unix socket, OTP 21+ is required for `Plug.Static` and
+  When using a Unix socket, OTP 21+ is required for `Plug.Static` and
   `Plug.Conn.send_file/3` to behave correctly.
+
+  ## Safety limits
+
+  Cowboy sets different limits on URL size, header length, number of
+  headers and so on to protect your application from attacks. For example,
+  the request line length defaults to 10k, which means Cowboy will return
+  414 if a larger URL is given. You can change this under `:protocol_options`:
+
+      protocol_options: [max_request_line_length: 50_000]
+
+  Keep in mind though increasing those limits can pose a security risk.
+  Other times, browsers and proxies along the way may have equally strict
+  limits, which means the request will still fail or the URL will be
+  pruned. You can [consult all limits here](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
 
   ## Loopback vs Public IP Addresses
 
@@ -66,8 +80,7 @@ defmodule Plug.Cowboy do
   other machines.
 
   Loopback addresses are only reachable from the same host (`localhost` is
-  usually configured to resolve to a loopback address).
-  You may wish to use one if:
+  usually configured to resolve to a loopback address). You may wish to use one if:
 
   - Your app is running in a development environment (such as your laptop) and
   you don't want others on the same network to access it.
