@@ -28,7 +28,7 @@ defmodule Plug.Cowboy.Translator do
          {reason, {mod, :call, [%Plug.Conn{} = conn, _opts]}},
          _stack
        ) do
-    if status_500_exception?(reason) or log_non_500?() do
+    if status_500_exception?(reason) or log_all?() do
       {:ok,
        [
          inspect(pid),
@@ -63,7 +63,7 @@ defmodule Plug.Cowboy.Translator do
 
   defp status_500_exception?(_), do: true
 
-  defp log_non_500?, do: Application.get_env(:plug_cowboy, :log_non_500, false)
+  defp log_all?, do: Application.get_env(:plug_cowboy, :log_all, false)
 
   defp conn_info(_min_level, conn) do
     [server_info(conn), request_info(conn)]
