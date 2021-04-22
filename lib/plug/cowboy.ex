@@ -58,12 +58,6 @@ defmodule Plug.Cowboy do
   When using a Unix socket, OTP 21+ is required for `Plug.Static` and
   `Plug.Conn.send_file/3` to behave correctly.
 
-  ## Application configuration
-
-    * `:log_all` - A boolean that determines whether all exceptions are logged by the adapter.
-      By default only exits, throws, and exceptions for which `Plug.Exception.status/1` returns
-      a status code >= 500 are logged. If set to `true`, all exceptions are logged.
-
   ## Safety limits
 
   Cowboy sets different limits on URL size, header length, number of
@@ -103,6 +97,16 @@ defmodule Plug.Cowboy do
   container, it needs to bind to a public IP address.
   - Your app is running in production without a reverse proxy, using Cowboy's
   SSL support.
+
+  ## Logging
+
+  You can configure which exceptions are logged via `:log_exceptions_with_status_code`
+  application environment variable. If the status code returned by `Plug.Exception.status/1`
+  for the exception falls into any of the configured ranges, the exception is logged.
+  By default it's set to `[500..599]`.
+
+      config :plug_cowboy,
+        log_exceptions_with_status_code: [400..599]
 
   ## Instrumentation
 
