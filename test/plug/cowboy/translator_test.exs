@@ -56,6 +56,25 @@ defmodule Plug.Cowboy.TranslatorTest do
     refute output =~ "** (exit) an exception was raised:"
   end
 
+  test "ranch/cowboy non-500 logs if configured" do
+    Application.put_env(:plug_cowboy, :log_non_500, true)
+    on_exit(fn -> Application.delete_env(:plug_cowboy, :log_non_500) end)
+
+    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9002)
+
+    output =
+      capture_log(fn ->
+        :hackney.get("http://127.0.0.1:9002/warn", [], "", [])
+        Plug.Cowboy.shutdown(__MODULE__.HTTP)
+      end)
+
+    assert output =~ ~r"#PID<0\.\d+\.0> running Plug\.Cowboy\.TranslatorTest \(.*\) terminated"
+    assert output =~ "Server: 127.0.0.1:9002 (http)"
+    assert output =~ "Request: GET /"
+    assert output =~ "** (exit) an exception was raised:"
+    assert output =~ "** (Plug.Parsers.UnsupportedMediaTypeError) unsupported media type foo/bar"
+  end
+
   test "ranch/cowboy linked logs" do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9003)
 
