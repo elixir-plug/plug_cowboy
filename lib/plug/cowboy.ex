@@ -58,6 +58,12 @@ defmodule Plug.Cowboy do
   When using a Unix socket, OTP 21+ is required for `Plug.Static` and
   `Plug.Conn.send_file/3` to behave correctly.
 
+  ## Application configuration
+
+    * `:log_all` - A boolean that determines whether all exceptions are logged by the adapter.
+      By default only exits, throws, and exceptions for which `Plug.Exception.status/1` returns
+      a status code >= 500 are logger. If set to `true`, all exceptions are logged.
+
   ## Safety limits
 
   Cowboy sets different limits on URL size, header length, number of
