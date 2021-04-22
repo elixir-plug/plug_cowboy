@@ -62,7 +62,7 @@ defmodule Plug.Cowboy do
 
     * `:log_all` - A boolean that determines whether all exceptions are logged by the adapter.
       By default only exits, throws, and exceptions for which `Plug.Exception.status/1` returns
-      a status code >= 500 are logger. If set to `true`, all exceptions are logged.
+      a status code >= 500 are logged. If set to `true`, all exceptions are logged.
 
   ## Safety limits
 
