@@ -98,6 +98,16 @@ defmodule Plug.Cowboy do
   - Your app is running in production without a reverse proxy, using Cowboy's
   SSL support.
 
+  ## Logging
+
+  You can configure which exceptions are logged via `:log_exceptions_with_status_code`
+  application environment variable. If the status code returned by `Plug.Exception.status/1`
+  for the exception falls into any of the configured ranges, the exception is logged.
+  By default it's set to `[500..599]`.
+
+      config :plug_cowboy,
+        log_exceptions_with_status_code: [400..599]
+
   ## Instrumentation
 
   Plug.Cowboy uses the `:telemetry` library for instrumentation. The following
