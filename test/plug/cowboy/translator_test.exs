@@ -57,8 +57,8 @@ defmodule Plug.Cowboy.TranslatorTest do
   end
 
   test "ranch/cowboy non-500 logs if configured" do
-    Application.put_env(:plug_cowboy, :log_all, true)
-    on_exit(fn -> Application.delete_env(:plug_cowboy, :log_all) end)
+    Application.put_env(:plug_cowboy, :log_exceptions_with_status_code, [[415]])
+    on_exit(fn -> Application.delete_env(:plug_cowboy, :log_exceptions_with_status_code) end)
 
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9002)
 
