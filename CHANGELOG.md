@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.5.1
+
+### Enhancements
+
+  * Allow to configure which errors should be logged
+  * Support telemetry 0.4.x or 1.x
+
 ## v2.5.0
 
 ### Enhancements
