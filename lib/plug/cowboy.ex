@@ -203,7 +203,7 @@ defmodule Plug.Cowboy do
   A function for starting a Cowboy2 server under Elixir v1.5+ supervisors.
 
   It supports all options as specified in the module documentation plus it
-  requires the follow two options:
+  requires the following two options:
 
     * `:scheme` - either `:http` or `:https`
     * `:plug` - such as `MyPlug` or `{MyPlug, plug_opts}`
