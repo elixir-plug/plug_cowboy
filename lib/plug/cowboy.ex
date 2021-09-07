@@ -293,7 +293,7 @@ defmodule Plug.Cowboy do
     :telemetry.attach(
       :plug_cowboy,
       [:cowboy, :request, :early_error],
-      &handle_event/4,
+      &__MODULE__.handle_event/4,
       nil
     )
 
