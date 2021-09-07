@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.5.2
+
+### Enhancements
+
+  * Fix warnings when running on telemetry 1.x
+
 ## v2.5.1
 
 ### Enhancements
