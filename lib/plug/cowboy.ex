@@ -386,6 +386,7 @@ defmodule Plug.Cowboy do
     raise ArgumentError, "could not start Cowboy2 adapter, " <> message
   end
 
+  @doc false
   def handle_event(
         [:cowboy, :request, :early_error],
         _,
