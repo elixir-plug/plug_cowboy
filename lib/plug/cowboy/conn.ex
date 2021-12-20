@@ -127,9 +127,11 @@ defmodule Plug.Cowboy.Conn do
   end
 
   defp to_headers_map(headers) when is_list(headers) do
+    # Ensure all keys are in lower case
+    Enum.map(headers, fn {key, value} -> {String.downcase(key, value} end)
     # Group set-cookie headers into a list for a single `set-cookie`
     # key since cowboy 2 requires headers as a map.
-    Enum.reduce(headers, %{}, fn
+    |> Enum.reduce(%{}, fn
       {key = "set-cookie", value}, acc ->
         case acc do
           %{^key => existing} -> %{acc | key => [value | existing]}
