@@ -17,10 +17,13 @@ jobs:
         include:
           - pair:
               elixir: 1.7.4
-              otp: 20.3.1
+              otp: 22.3.4
           - pair:
               elixir: 1.11.4
               otp: 23.2.7
+          - pair:
+              elixir: 1.13.3
+              otp: 24.2.2
             lint: lint
     steps:
       - uses: actions/checkout@v2
