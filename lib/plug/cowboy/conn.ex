@@ -91,6 +91,9 @@ defmodule Plug.Cowboy.Conn do
   end
 
   @impl true
+  def upgrade(_req, _protocol, _args), do: {:error, :not_supported}
+
+  @impl true
   def push(req, path, headers) do
     opts =
       case {req.port, req.sock} do

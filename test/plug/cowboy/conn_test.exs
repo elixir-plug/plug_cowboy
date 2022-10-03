@@ -340,6 +340,16 @@ defmodule Plug.Cowboy.ConnTest do
              request(:get, "/inform")
   end
 
+  def upgrade_unsupported(conn) do
+    conn
+    |> upgrade_adapter(:unsupported, opt: :unsupported)
+  end
+
+  test "upgrade will not set the response" do
+    assert {500, _, body} = request(:get, "/upgrade_unsupported")
+    assert body =~ "upgrade to unsupported not supported by Plug.Cowboy.Conn"
+  end
+
   def push(conn) do
     conn
     |> push("/static/assets.css")
