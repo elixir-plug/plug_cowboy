@@ -91,7 +91,10 @@ defmodule Plug.Cowboy.Conn do
   end
 
   @impl true
-  def upgrade(req, :websocket, args), do: {:ok, Map.put(req, :upgrade, {:websocket, args})}
+  def upgrade(req, :websocket, {_handler, _state, _cowboy_opts} = args) do
+    {:ok, Map.put(req, :upgrade, {:websocket, args})}
+  end
+
   def upgrade(_req, _protocol, _args), do: {:error, :not_supported}
 
   @impl true
