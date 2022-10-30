@@ -140,9 +140,10 @@ defmodule Plug.Cowboy do
   should handle the WebSocket connection, and must take the form `{handler, handler_opts,
   connection_opts}`, where values are as follows:
 
-  * `handler` is a module which implements the `:cowboy_websocket` behaviour. Note that this
-    module will NOT have its `c:cowboy_websocket.init/2` callback called; only the 'later' parts
-    of the `:cowboy_websocket` lifecycle are supported
+  * `handler` is a module which implements the
+    [`:cowboy_websocket`](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/)
+    behaviour. Note that this module will NOT have its `c:cowboy_websocket.init/2` callback
+    called; only the 'later' parts of the `:cowboy_websocket` lifecycle are supported
   * `handler_opts` is an arbitrary term which will be passed as the argument to
     `c:cowboy_websocket.websocket_init/1`
   * `connection_opts` is a keyword list which consists of zero or more of the following options:
