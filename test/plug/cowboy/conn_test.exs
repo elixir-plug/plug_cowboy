@@ -368,7 +368,7 @@ defmodule Plug.Cowboy.ConnTest do
     # In actual use, it's the caller's responsibility to ensure the upgrade is valid before
     # calling upgrade_adapter
     conn
-    |> upgrade_adapter(:websocket, {NoopWebSocketHandler, [], []})
+    |> upgrade_adapter(:websocket, {NoopWebSocketHandler, [], %{}})
   end
 
   test "upgrades the connection when the connection is a valid websocket" do

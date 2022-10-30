@@ -41,7 +41,7 @@ defmodule WebSocketHandlerTest do
   def call(conn, _opts) do
     conn = Plug.Conn.fetch_query_params(conn)
     handler = conn.query_params["handler"] |> String.to_atom()
-    Plug.Conn.upgrade_adapter(conn, :websocket, {handler, [], [timeout: 1000]})
+    Plug.Conn.upgrade_adapter(conn, :websocket, {handler, [], %{idle_timeout: 1000}})
   end
 
   test "websocket_init and websocket_handle are called", context do

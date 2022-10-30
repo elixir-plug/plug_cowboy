@@ -12,18 +12,7 @@ defmodule Plug.Cowboy.Handler do
       |> maybe_send(plug)
       |> case do
         %Plug.Conn{adapter: {@connection, %{upgrade: {:websocket, websocket_args}} = req}} = conn ->
-          {handler, state, connection_opts} = websocket_args
-
-          cowboy_opts =
-            connection_opts
-            |> Enum.flat_map(fn
-              {:timeout, timeout} -> [idle_timeout: timeout]
-              {:compress, _} = opt -> [opt]
-              {:max_frame_size, _} = opt -> [opt]
-              _other -> []
-            end)
-            |> Map.new()
-
+          {handler, state, cowboy_opts} = websocket_args
           {__MODULE__, copy_resp_headers(conn, req), {handler, state}, cowboy_opts}
 
         %Plug.Conn{adapter: {@connection, req}} ->
