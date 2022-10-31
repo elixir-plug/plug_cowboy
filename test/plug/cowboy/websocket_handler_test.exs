@@ -27,9 +27,9 @@ defmodule WebSocketHandlerTest do
   ]
 
   setup_all do
-    {:ok, _} = Plug.Cowboy.http(__MODULE__, [], port: 8083, protocol_options: @protocol_options)
+    {:ok, _} = Plug.Cowboy.http(__MODULE__, [], port: 0, protocol_options: @protocol_options)
     on_exit(fn -> :ok = Plug.Cowboy.shutdown(__MODULE__.HTTP) end)
-    {:ok, port: 8083}
+    {:ok, port: :ranch.get_port(__MODULE__.HTTP)}
   end
 
   @behaviour Plug

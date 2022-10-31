@@ -1,6 +1,6 @@
-use Mix.Config
+import Config
 
-if Mix.env() == :test do
+if config_env() == :test do
   config :plug, :statuses, %{
     418 => "Totally not a teapot",
     998 => "Not An RFC Status Code"
