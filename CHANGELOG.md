@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.6.0
+
+### Enhancements
+
+  * Support websocket upgrades
+  * Require Plug v1.14+ and Elixir v1.10+
+
 ## v2.5.2
 
 ### Enhancements

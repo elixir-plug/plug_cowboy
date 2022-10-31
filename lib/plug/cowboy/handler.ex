@@ -31,7 +31,7 @@ defmodule Plug.Cowboy.Handler do
   end
 
   def upgrade(req, env, __MODULE__, {handler, state}, opts) do
-    :cowboy_websocket.upgrade(req, env, handler, state, opts)
+    :cowboy_websocket.upgrade(req, env, handler.module_info(:module), state, opts)
   end
 
   defp copy_resp_headers(%Plug.Conn{} = conn, req) do
