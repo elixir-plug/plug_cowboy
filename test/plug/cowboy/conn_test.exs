@@ -340,6 +340,69 @@ defmodule Plug.Cowboy.ConnTest do
              request(:get, "/inform")
   end
 
+  def upgrade_unsupported(conn) do
+    conn
+    |> upgrade_adapter(:unsupported, opt: :unsupported)
+  end
+
+  test "upgrade will not set the response" do
+    assert {500, _, body} = request(:get, "/upgrade_unsupported")
+    assert body =~ "upgrade to unsupported not supported by Plug.Cowboy.Conn"
+  end
+
+  defmodule NoopWebSocketHandler do
+    @behaviour :cowboy_websocket
+
+    # We never actually call this; it's just here to quell compiler warnings
+    @impl true
+    def init(req, state), do: {:cowboy_websocket, req, state}
+
+    @impl true
+    def websocket_handle(_frame, state), do: {:ok, state}
+
+    @impl true
+    def websocket_info(_msg, state), do: {:ok, state}
+  end
+
+  def upgrade_websocket(conn) do
+    # In actual use, it's the caller's responsibility to ensure the upgrade is valid before
+    # calling upgrade_adapter
+    conn
+    |> upgrade_adapter(:websocket, {NoopWebSocketHandler, [], %{}})
+  end
+
+  test "upgrades the connection when the connection is a valid websocket" do
+    {:ok, socket} = :gen_tcp.connect('localhost', 8003, active: false, mode: :binary)
+
+    :gen_tcp.send(socket, """
+    GET /upgrade_websocket HTTP/1.1\r
+    Host: server.example.com\r
+    Upgrade: websocket\r
+    Connection: Upgrade\r
+    Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r
+    Sec-WebSocket-Version: 13\r
+    \r
+    """)
+
+    {:ok, response} = :gen_tcp.recv(socket, 234)
+
+    assert [
+             "HTTP/1.1 101 Switching Protocols",
+             "cache-control: max-age=0, private, must-revalidate",
+             "connection: Upgrade",
+             "date: " <> _date,
+             "sec-websocket-accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=",
+             "server: Cowboy",
+             "upgrade: websocket",
+             "",
+             ""
+           ] = String.split(response, "\r\n")
+  end
+
+  test "returns error in cases where an upgrade is indicated but the connection is not a valid upgrade" do
+    assert {426, _headers, ""} = request(:get, "/upgrade_websocket")
+  end
+
   def push(conn) do
     conn
     |> push("/static/assets.css")

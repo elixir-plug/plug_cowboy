@@ -7,12 +7,17 @@ defmodule Plug.Cowboy.Handler do
     conn = @connection.conn(req)
 
     try do
-      %{adapter: {@connection, req}} =
-        conn
-        |> plug.call(opts)
-        |> maybe_send(plug)
+      conn
+      |> plug.call(opts)
+      |> maybe_send(plug)
+      |> case do
+        %Plug.Conn{adapter: {@connection, %{upgrade: {:websocket, websocket_args}} = req}} = conn ->
+          {handler, state, cowboy_opts} = websocket_args
+          {__MODULE__, copy_resp_headers(conn, req), {handler, state}, cowboy_opts}
 
-      {:ok, req, {plug, opts}}
+        %Plug.Conn{adapter: {@connection, req}} ->
+          {:ok, req, {plug, opts}}
+      end
     catch
       kind, reason ->
         exit_on_error(kind, reason, __STACKTRACE__, {plug, :call, [conn, opts]})
@@ -23,6 +28,16 @@ defmodule Plug.Cowboy.Handler do
         0 -> :ok
       end
     end
+  end
+
+  def upgrade(req, env, __MODULE__, {handler, state}, opts) do
+    :cowboy_websocket.upgrade(req, env, handler, state, opts)
+  end
+
+  defp copy_resp_headers(%Plug.Conn{} = conn, req) do
+    Enum.reduce(conn.resp_headers, req, fn {key, val}, acc ->
+      :cowboy_req.set_resp_header(key, val, acc)
+    end)
   end
 
   defp exit_on_error(
