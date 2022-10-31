@@ -91,7 +91,17 @@ defmodule Plug.Cowboy.Conn do
   end
 
   @impl true
-  def upgrade(req, :websocket, {_handler, _state, _cowboy_opts} = args) do
+  def upgrade(req, :websocket, args) do
+    case args do
+      {handler, _state, cowboy_opts} when is_atom(handler) and is_map(cowboy_opts) ->
+        :ok
+
+      _ ->
+        raise ArgumentError,
+              "expected websocket upgrade on Cowboy to be on the format {handler :: atom(), arg :: term(), opts :: map()}, got: " <>
+                inspect(args)
+    end
+
     {:ok, Map.put(req, :upgrade, {:websocket, args})}
   end
 
