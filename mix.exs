@@ -33,7 +33,7 @@ defmodule Plug.Cowboy.MixProject do
 
   def deps do
     [
-      {:plug, "~> 1.7"},
+      {:plug, "~> 1.14"},
       {:cowboy, "~> 2.7"},
       {:cowboy_telemetry, "~> 0.3"},
       {:ex_doc, "~> 0.20", only: :docs},
