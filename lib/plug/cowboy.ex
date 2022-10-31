@@ -146,13 +146,8 @@ defmodule Plug.Cowboy do
     called; only the 'later' parts of the `:cowboy_websocket` lifecycle are supported
   * `handler_opts` is an arbitrary term which will be passed as the argument to
     `c:cowboy_websocket.websocket_init/1`
-  * `connection_opts` is a keyword list which consists of zero or more of the following options:
-    * `idle_timeout`: The number of milliseconds to wait after no client data is received before
-      closing the connection. Defaults to `60_000`
-    * `compress`: Whether or not to attempt negotiation of a compression extension with the
-      client. Defaults to `false`
-    * `max_frame_size`: The maximum frame size in bytes to accept from the client. The connection 
-      will be closed if the client sends a frame larger than this suze. Defaults to `:infinity`
+  * `connection_opts` is a map with any of [Cowboy's websockets options](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/#_opts)
+
   """
 
   require Logger
