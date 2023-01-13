@@ -42,8 +42,7 @@ defmodule Plug.Cowboy.Translator do
       metadata = [
         crash_reason: reason,
         domain: [:cowboy]
-        | maybe_conn_metadata(conn)
-      ]
+      ] ++ maybe_conn_metadata(conn)
 
       {:ok, message, metadata}
     else
