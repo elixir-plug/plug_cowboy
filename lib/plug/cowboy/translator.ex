@@ -42,7 +42,7 @@ defmodule Plug.Cowboy.Translator do
       metadata = [
         crash_reason: reason,
         domain: [:cowboy]
-        | maybe_conn_metadata(metadata, conn)
+        | maybe_conn_metadata(conn)
       ]
 
       {:ok, message, metadata}
@@ -91,7 +91,7 @@ defmodule Plug.Cowboy.Translator do
     ["Request: ", method, ?\s, path_to_iodata(conn.request_path, query_string), ?\n]
   end
 
-  defp maybe_conn_metadata(metadata, conn) do
+  defp maybe_conn_metadata(conn) do
     if Application.get_env(:plug_cowboy, :conn_in_exception_metadata, true) do
       [conn: conn]
     else
