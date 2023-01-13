@@ -29,16 +29,22 @@ defmodule Plug.Cowboy.Translator do
          _stack
        ) do
     if log_exception?(reason) do
-      {:ok,
-       [
-         inspect(pid),
-         " running ",
-         inspect(mod),
-         extra,
-         " terminated\n",
-         conn_info(min_level, conn)
-         | Exception.format(:exit, reason, [])
-       ], conn: conn, crash_reason: reason, domain: [:cowboy]}
+      message = [
+        inspect(pid),
+        " running ",
+        inspect(mod),
+        extra,
+        " terminated\n",
+        conn_info(min_level, conn)
+        | Exception.format(:exit, reason, [])
+      ]
+
+      metadata = [
+        crash_reason: reason,
+        domain: [:cowboy]
+      ] ++ maybe_conn_metadata(conn)
+
+      {:ok, message, metadata}
     else
       :skip
     end
@@ -82,6 +88,14 @@ defmodule Plug.Cowboy.Translator do
 
   defp request_info(%Plug.Conn{method: method, query_string: query_string} = conn) do
     ["Request: ", method, ?\s, path_to_iodata(conn.request_path, query_string), ?\n]
+  end
+
+  defp maybe_conn_metadata(conn) do
+    if Application.get_env(:plug_cowboy, :conn_in_exception_metadata, true) do
+      [conn: conn]
+    else
+      []
+    end
   end
 
   defp path_to_iodata(path, ""), do: path

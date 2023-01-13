@@ -117,6 +117,20 @@ defmodule Plug.Cowboy.TranslatorTest do
     assert metadata =~ "domain: [:cowboy]"
   end
 
+  test "metadata opt-out ranch/cowboy 500 logs" do
+    {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9004)
+    Application.put_env(:plug_cowboy, :conn_in_exception_metadata, false)
+    on_exit(fn -> Application.delete_env(:plug_cowboy, :log_exceptions_with_status_code) end)
+
+    metadata =
+      capture_log(@metadata_log_opts, fn ->
+        :hackney.get("http://127.0.0.1:9004/error", [], "", [])
+        Plug.Cowboy.shutdown(__MODULE__.HTTP)
+      end)
+
+    refute metadata =~ "conn: %Plug.Conn{"
+  end
+
   test "metadata in ranch/cowboy lined logs" do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9005)
 
