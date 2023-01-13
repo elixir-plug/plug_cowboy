@@ -108,10 +108,10 @@ defmodule Plug.Cowboy do
       config :plug_cowboy,
         log_exceptions_with_status_code: [400..599]
 
-  By default, Plug.Cowboy includes the entire `conn` to the log metadata for exceptions.
+  By default, `Plug.Cowboy` includes the entire `conn` to the log metadata for exceptions.
   However, this metadata may contain sensitive information such as security headers or 
   cookies, which may be logged in plain text by certain logging backends. To prevent this,
-  you can configure `conn_in_exception_metadata` to not include the `conn` in the metadata.
+  you can configure the `:conn_in_exception_metadata` option to not include the `conn` in the metadata.
 
       config :plug_cowboy,
         conn_in_exception_metadata: false
