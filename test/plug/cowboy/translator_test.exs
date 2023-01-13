@@ -120,7 +120,7 @@ defmodule Plug.Cowboy.TranslatorTest do
   test "metadata opt-out ranch/cowboy 500 logs" do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9004)
     Application.put_env(:plug_cowboy, :conn_in_exception_metadata, false)
-    on_exit(fn -> Application.delete_env(:plug_cowboy, :log_exceptions_with_status_code) end)
+    on_exit(fn -> Application.delete_env(:plug_cowboy, :conn_in_exception_metadata) end)
 
     metadata =
       capture_log(@metadata_log_opts, fn ->
