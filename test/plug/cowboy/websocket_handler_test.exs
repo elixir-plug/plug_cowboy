@@ -70,7 +70,7 @@ defmodule WebSocketHandlerTest do
   # Simple WebSocket client
 
   def tcp_client(context) do
-    {:ok, socket} = :gen_tcp.connect('localhost', context[:port], active: false, mode: :binary)
+    {:ok, socket} = :gen_tcp.connect(~c"localhost", context[:port], active: false, mode: :binary)
 
     socket
   end

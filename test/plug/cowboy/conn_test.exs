@@ -372,7 +372,7 @@ defmodule Plug.Cowboy.ConnTest do
   end
 
   test "upgrades the connection when the connection is a valid websocket" do
-    {:ok, socket} = :gen_tcp.connect('localhost', 8003, active: false, mode: :binary)
+    {:ok, socket} = :gen_tcp.connect(~c"localhost", 8003, active: false, mode: :binary)
 
     :gen_tcp.send(socket, """
     GET /upgrade_websocket HTTP/1.1\r
@@ -610,7 +610,7 @@ defmodule Plug.Cowboy.ConnTest do
 
     opts = [
       pool: :https,
-      ssl_options: [cacertfile: @https_options[:certfile], server_name_indication: 'localhost']
+      ssl_options: [cacertfile: @https_options[:certfile], server_name_indication: ~c"localhost"]
     ]
 
     assert {:ok, 200, _headers, client} =
@@ -622,7 +622,7 @@ defmodule Plug.Cowboy.ConnTest do
 
   @http2_opts [
     cacertfile: @https_options[:certfile],
-    server_name_indication: 'localhost',
+    server_name_indication: ~c"localhost",
     port: 8004
   ]
 
@@ -646,21 +646,21 @@ defmodule Plug.Cowboy.ConnTest do
   end
 
   test "http2 response" do
-    {:ok, pid} = Kadabra.open('localhost', :https, @http2_opts)
+    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
     Kadabra.get(pid, "/http2")
 
     assert_receive({:end_stream, %Kadabra.Stream.Response{body: "HTTP/2", status: 200}}, 1_000)
   end
 
   test "http2 early hints" do
-    {:ok, pid} = Kadabra.open('localhost', :https, @http2_opts)
+    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
     Kadabra.get(pid, "/http2?earlyhints=true")
     assert_receive({:end_stream, %Kadabra.Stream.Response{headers: headers}})
     assert {"link", "</style.css>; rel=preload; as=style"} in headers
   end
 
   test "http2 server push" do
-    {:ok, pid} = Kadabra.open('localhost', :https, @http2_opts)
+    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
     Kadabra.get(pid, "/http2")
     assert_receive({:push_promise, %Kadabra.Stream.Response{headers: headers}})
     assert {"accept", "text/css"} in headers
@@ -668,7 +668,7 @@ defmodule Plug.Cowboy.ConnTest do
   end
 
   test "http2 server push without automatic mime type" do
-    {:ok, pid} = Kadabra.open('localhost', :https, @http2_opts)
+    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
     Kadabra.get(pid, "/http2?noinfer=true")
     assert_receive({:push_promise, %Kadabra.Stream.Response{headers: headers}})
     assert {"accept", "text/plain"} in headers
@@ -691,7 +691,7 @@ defmodule Plug.Cowboy.ConnTest do
 
     opts = [
       pool: :client_ssl_pool,
-      ssl_options: [server_name_indication: 'localhost'] ++ @client_ssl_opts
+      ssl_options: [server_name_indication: ~c"localhost"] ++ @client_ssl_opts
     ]
 
     assert {:ok, 200, _headers, client} =

@@ -39,10 +39,11 @@ defmodule Plug.Cowboy.Translator do
         | Exception.format(:exit, reason, [])
       ]
 
-      metadata = [
-        crash_reason: reason,
-        domain: [:cowboy]
-      ] ++ maybe_conn_metadata(conn)
+      metadata =
+        [
+          crash_reason: reason,
+          domain: [:cowboy]
+        ] ++ maybe_conn_metadata(conn)
 
       {:ok, message, metadata}
     else
