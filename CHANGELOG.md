@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.6.1
+
+### Enhancements
+
+ * Allow for opt-out of conn metadata on exception logs
+ * Support `:check_interval` in drainer (in addition to `:drain_check_interval`)
+
 ## v2.6.0
 
 ### Enhancements
