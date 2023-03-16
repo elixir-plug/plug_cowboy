@@ -25,9 +25,8 @@ defmodule Plug.Cowboy.Drainer do
     * `:shutdown` - How long to wait for connections to drain.
       Defaults to 5000ms.
 
-    * `:drain_check_interval` - How frequently to check if a listener's
-      connections have been drained.
-      Defaults to 1000ms.
+    * `:check_interval` - How frequently to check if a listener's
+      connections have been drained. Defaults to 1000ms.
 
   ## Examples
 
@@ -81,27 +80,27 @@ defmodule Plug.Cowboy.Drainer do
   def terminate(_reason, opts) do
     opts
     |> Keyword.fetch!(:refs)
-    |> drain(Keyword.get(opts, :drain_check_interval, 1_000))
+    |> drain(opts[:check_interval] || opts[:drain_check_interval] || 1_000)
   end
 
-  defp drain(:all, drain_check_interval) do
+  defp drain(:all, check_interval) do
     :ranch.info()
     |> Enum.map(&elem(&1, 0))
-    |> drain(drain_check_interval)
+    |> drain(check_interval)
   end
 
-  defp drain(refs, drain_check_interval) do
+  defp drain(refs, check_interval) do
     refs
     |> Enum.filter(&suspend_listener/1)
-    |> Enum.each(&wait_for_connections(&1, drain_check_interval))
+    |> Enum.each(&wait_for_connections(&1, check_interval))
   end
 
   defp suspend_listener(ref) do
     :ranch.suspend_listener(ref) == :ok
   end
 
-  defp wait_for_connections(ref, drain_check_interval) do
-    :ranch.wait_for_connections(ref, :==, 0, drain_check_interval)
+  defp wait_for_connections(ref, check_interval) do
+    :ranch.wait_for_connections(ref, :==, 0, check_interval)
   end
 
   defp validate_refs!(:all), do: :ok
