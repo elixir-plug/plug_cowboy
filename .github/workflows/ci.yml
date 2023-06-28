@@ -22,8 +22,8 @@ jobs:
               elixir: 1.13.3
               otp: 24.2.2
           - pair:
-              elixir: 1.15.0
-              otp: 26.0.1
+              elixir: 1.14.5
+              otp: 25.3.2
             lint: lint
     steps:
       - uses: actions/checkout@v2
