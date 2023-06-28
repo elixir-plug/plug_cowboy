@@ -9,7 +9,7 @@ defmodule Plug.Cowboy.MixProject do
     [
       app: :plug_cowboy,
       version: @version,
-      elixir: "~> 1.10",
+      elixir: "~> 1.11",
       deps: deps(),
       package: package(),
       description: @description,
