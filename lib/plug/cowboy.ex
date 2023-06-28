@@ -349,7 +349,7 @@ defmodule Plug.Cowboy do
     {timeout, opts} = Keyword.pop(opts, :timeout)
 
     if timeout do
-      Logger.warn("the :timeout option for Cowboy webserver has no effect and must be removed")
+      Logger.warning("the :timeout option for Cowboy webserver has no effect and must be removed")
     end
 
     opts = Keyword.delete(opts, :otp_app)
