@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.6.2
+
+### Enhancements
+
+ * Fix warnings on Elixir v1.15+
+
 ## v2.6.1
 
 ### Enhancements
