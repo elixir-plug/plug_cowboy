@@ -136,6 +136,20 @@ defmodule Plug.Cowboy.ConnTest do
     assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
   end
 
+  def set_cookies(%Conn{} = conn) do
+    conn
+    |> put_resp_cookie("foo", "bar")
+    |> put_resp_cookie("bar", "bat")
+    |> resp(200, conn.request_path)
+  end
+
+  test "set cookies" do
+    assert {200, headers, _} = request(:get, "/set_cookies")
+
+    assert for({"set-cookie", value} <- headers, do: value) ==
+             ["bar=bat; path=/; HttpOnly", "foo=bar; path=/; HttpOnly"]
+  end
+
   def telemetry(conn) do
     Process.sleep(30)
     send_resp(conn, 200, "TELEMETRY")
