@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.0
+
+### Enhancements
+
+ * Do not allow Cowboy 2.11 due to backwards incompatible changes
+
 ## v2.6.2
 
 ### Enhancements
