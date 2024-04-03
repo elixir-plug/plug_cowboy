@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.1
+
+### Enhancements
+
+ * Support Cowboy 2.11
+
 ## v2.7.0
 
 ### Enhancements
