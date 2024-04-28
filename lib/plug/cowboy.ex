@@ -34,10 +34,10 @@ defmodule Plug.Cowboy do
       Defaults to false.
 
     * `:stream_handlers` - List of Cowboy `stream_handlers`,
-      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
+      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
 
     * `:protocol_options` - Specifies remaining protocol options,
-      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
+      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
 
     * `:transport_options` - A keyword list specifying transport options,
       see [Ranch docs](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch/).
@@ -70,7 +70,7 @@ defmodule Plug.Cowboy do
   Keep in mind though increasing those limits can pose a security risk.
   Other times, browsers and proxies along the way may have equally strict
   limits, which means the request will still fail or the URL will be
-  pruned. You can [consult all limits here](https://ninenines.eu/docs/en/cowboy/2.5/manual/cowboy_http/).
+  pruned. You can [consult all limits here](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
 
   ## Loopback vs Public IP Addresses
 
