@@ -87,8 +87,7 @@ defmodule Plug.Cowboy.Conn do
 
   @impl true
   def inform(req, status, headers) do
-    req = to_headers_map(req, headers)
-    :cowboy_req.inform(status, %{}, req)
+    :cowboy_req.inform(status, to_headers_map(headers), req)
   end
 
   @impl true
