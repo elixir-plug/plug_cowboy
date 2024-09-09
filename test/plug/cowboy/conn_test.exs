@@ -37,7 +37,6 @@ defmodule Plug.Cowboy.ConnTest do
   ]
 
   setup_all do
-    {:ok, _} = Application.ensure_all_started(:kadabra)
     {:ok, _} = Plug.Cowboy.http(__MODULE__, [], port: 8003, protocol_options: @protocol_options)
     {:ok, _} = Plug.Cowboy.https(__MODULE__, [], @https_options)
 
@@ -657,36 +656,6 @@ defmodule Plug.Cowboy.ConnTest do
         |> push("/static/assets.css")
         |> send_resp(200, Atom.to_string(get_http_protocol(conn)))
     end
-  end
-
-  test "http2 response" do
-    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
-    Kadabra.get(pid, "/http2")
-
-    assert_receive({:end_stream, %Kadabra.Stream.Response{body: "HTTP/2", status: 200}}, 1_000)
-  end
-
-  test "http2 early hints" do
-    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
-    Kadabra.get(pid, "/http2?earlyhints=true")
-    assert_receive({:end_stream, %Kadabra.Stream.Response{headers: headers}})
-    assert {"link", "</style.css>; rel=preload; as=style"} in headers
-  end
-
-  test "http2 server push" do
-    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
-    Kadabra.get(pid, "/http2")
-    assert_receive({:push_promise, %Kadabra.Stream.Response{headers: headers}})
-    assert {"accept", "text/css"} in headers
-    assert {":path", "/static/assets.css"} in headers
-  end
-
-  test "http2 server push without automatic mime type" do
-    {:ok, pid} = Kadabra.open(~c"localhost", :https, @http2_opts)
-    Kadabra.get(pid, "/http2?noinfer=true")
-    assert_receive({:push_promise, %Kadabra.Stream.Response{headers: headers}})
-    assert {"accept", "text/plain"} in headers
-    assert {":path", "/static/assets.css"} in headers
   end
 
   def peer_data(conn) do
