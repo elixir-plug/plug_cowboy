@@ -61,7 +61,7 @@ defmodule Plug.Cowboy.Translator do
        extra,
        " terminated\n"
        | Exception.format_exit({reason, stack})
-     ], crash_reason: reason, domain: [:cowboy]}
+     ], crash_reason: {reason, stack}, domain: [:cowboy]}
   end
 
   defp log_exception?({%{__exception__: true} = exception, _}) do
