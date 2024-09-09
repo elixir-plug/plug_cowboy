@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.2
+
+### Bug fixes
+
+ * Ensure `crash_reason` in metadata is always a tuple
+
 ## v2.7.1
 
 ### Enhancements
