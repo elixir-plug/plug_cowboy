@@ -131,7 +131,7 @@ defmodule Plug.Cowboy.TranslatorTest do
     refute metadata =~ "conn: %Plug.Conn{"
   end
 
-  test "metadata in ranch/cowboy lined logs" do
+  test "metadata in ranch/cowboy linked logs" do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9005)
 
     metadata =
@@ -141,6 +141,7 @@ defmodule Plug.Cowboy.TranslatorTest do
       end)
 
     assert metadata =~ "crash_reason:"
+    assert metadata =~ "{GenServer, :call"
     assert metadata =~ "domain: [:cowboy]"
   end
 end
