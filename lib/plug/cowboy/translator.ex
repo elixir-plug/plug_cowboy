@@ -25,7 +25,7 @@ defmodule Plug.Cowboy.Translator do
          _ref,
          extra,
          pid,
-         {reason, {mod, :call, [%Plug.Conn{} = conn, _opts]}},
+         {reason, {mod, :call, [%Plug.Conn{} = conn, _opts]}, logger_metadata},
          _stack
        ) do
     if log_exception?(reason) do
@@ -40,10 +40,11 @@ defmodule Plug.Cowboy.Translator do
       ]
 
       metadata =
-        [
-          crash_reason: reason,
-          domain: [:cowboy]
-        ] ++ maybe_conn_metadata(conn)
+        logger_metadata ++
+          [
+            crash_reason: reason,
+            domain: [:cowboy]
+          ] ++ maybe_conn_metadata(conn)
 
       {:ok, message, metadata}
     else

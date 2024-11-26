@@ -51,15 +51,19 @@ defmodule Plug.Cowboy.Handler do
 
   defp exit_on_error(:error, value, stack, call) do
     exception = Exception.normalize(:error, value, stack)
-    :erlang.raise(:exit, {{exception, stack}, call}, [])
+    exit_on_error({exception, stack}, call)
   end
 
   defp exit_on_error(:throw, value, stack, call) do
-    :erlang.raise(:exit, {{{:nocatch, value}, stack}, call}, [])
+    exit_on_error({{:nocatch, value}, stack}, call)
   end
 
   defp exit_on_error(:exit, value, _stack, call) do
-    :erlang.raise(:exit, {value, call}, [])
+    exit_on_error(value, call)
+  end
+
+  defp exit_on_error(reason, call) do
+    :erlang.raise(:exit, {reason, call, Logger.metadata()}, [])
   end
 
   defp maybe_send(%Plug.Conn{state: :unset}, _plug), do: raise(Plug.Conn.NotSentError)

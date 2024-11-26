@@ -12,6 +12,8 @@ defmodule Plug.Cowboy.TranslatorTest do
   end
 
   def call(%{path_info: ["error"]}, _opts) do
+    Logger.metadata(%{user_id: 123})
+
     raise "oops"
   end
 
@@ -29,12 +31,14 @@ defmodule Plug.Cowboy.TranslatorTest do
     {:ok, _pid} = Plug.Cowboy.http(__MODULE__, [], port: 9001)
 
     output =
-      capture_log(fn ->
+      capture_log([metadata: [:user_id]], fn ->
         :hackney.get("http://127.0.0.1:9001/error", [], "", [])
         Plug.Cowboy.shutdown(__MODULE__.HTTP)
       end)
 
-    assert output =~ ~r"#PID<0\.\d+\.0> running Plug\.Cowboy\.TranslatorTest \(.*\) terminated"
+    assert output =~
+             ~r"user_id=123 \[error\] #PID<0\.\d+\.0> running Plug\.Cowboy\.TranslatorTest \(.*\) terminated"
+
     assert output =~ "Server: 127.0.0.1:9001 (http)"
     assert output =~ "Request: GET /"
     assert output =~ "** (exit) an exception was raised:"
