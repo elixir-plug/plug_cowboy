@@ -45,3 +45,22 @@ jobs:
         if: ${{ matrix.lint }}
 
       - run: mix test
+  test_cowboy_latest:
+    runs-on: ubuntu-20.04
+    env:
+      MIX_ENV: test
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: 24.2.2
+          elixir-version: 1.13.3
+
+      - run: mix deps.unlock cowboy cowlib ranch && mix deps.get --only test
+
+      - run: mix deps.compile
+
+      - run: mix test
