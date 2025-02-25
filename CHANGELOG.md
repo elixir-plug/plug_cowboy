@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.3
+
+### Enhancements
+
+ * Ensure errors from Cowboy 2.13 are correctly translated
+
 ## v2.7.2
 
 ### Bug fixes
