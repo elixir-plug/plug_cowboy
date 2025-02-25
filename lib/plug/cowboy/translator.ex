@@ -1,6 +1,7 @@
 defmodule Plug.Cowboy.Translator do
   @moduledoc false
 
+  # Cowboy 2.12.0 and below error format
   @doc """
   The `translate/4` function expected by custom Logger translators.
   """
@@ -9,6 +10,17 @@ defmodule Plug.Cowboy.Translator do
         :error,
         :format,
         {~c"Ranch listener" ++ _, [ref, conn_pid, stream_id, stream_pid, reason, stack]}
+      ) do
+    extra = [" (connection ", inspect(conn_pid), ", stream id ", inspect(stream_id), ?)]
+    translate_ranch(min_level, ref, extra, stream_pid, reason, stack)
+  end
+
+  # Cowboy 2.13.0 error format
+  def translate(
+        min_level,
+        :error,
+        :format,
+        {~c"Ranch listener" ++ _, [ref, conn_pid, stream_id, stream_pid, {reason, stack}]}
       ) do
     extra = [" (connection ", inspect(conn_pid), ", stream id ", inspect(stream_id), ?)]
     translate_ranch(min_level, ref, extra, stream_pid, reason, stack)

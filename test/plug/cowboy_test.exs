@@ -13,12 +13,11 @@ defmodule Plug.CowboyTest do
   test "supports Elixir child specs" do
     spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, port: 4040]}
 
+    ranch_listener_mod = ranch_listener_for_version()
+
     assert %{
-             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-             modules: [:ranch_listener_sup],
-             restart: :permanent,
-             shutdown: :infinity,
-             start: {:ranch_listener_sup, :start_link, _},
+             id: {^ranch_listener_mod, Plug.CowboyTest.HTTP},
+             start: {^ranch_listener_mod, :start_link, _},
              type: :supervisor
            } = Supervisor.child_spec(spec, [])
 
@@ -26,11 +25,8 @@ defmodule Plug.CowboyTest do
     spec = {Plug.Cowboy, [scheme: :http, plug: __MODULE__, options: [port: 4040]]}
 
     assert %{
-             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-             modules: [:ranch_listener_sup],
-             restart: :permanent,
-             shutdown: :infinity,
-             start: {:ranch_listener_sup, :start_link, _},
+             id: {^ranch_listener_mod, Plug.CowboyTest.HTTP},
+             start: {^ranch_listener_mod, :start_link, _},
              type: :supervisor
            } = Supervisor.child_spec(spec, [])
 
@@ -39,11 +35,8 @@ defmodule Plug.CowboyTest do
        [scheme: :http, plug: __MODULE__, parent: :key, options: [:inet6, port: 4040]]}
 
     assert %{
-             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-             modules: [:ranch_listener_sup],
-             restart: :permanent,
-             shutdown: :infinity,
-             start: {:ranch_listener_sup, :start_link, _},
+             id: {^ranch_listener_mod, Plug.CowboyTest.HTTP},
+             start: {^ranch_listener_mod, :start_link, _},
              type: :supervisor
            } = Supervisor.child_spec(spec, [])
   end
@@ -58,7 +51,8 @@ defmodule Plug.CowboyTest do
 
     spec = {Plug.Cowboy, [scheme: :https, plug: __MODULE__] ++ options}
 
-    %{start: {:ranch_listener_sup, :start_link, opts}} = Supervisor.child_spec(spec, [])
+    ranch_listener_mod = ranch_listener_for_version()
+    %{start: {^ranch_listener_mod, :start_link, opts}} = Supervisor.child_spec(spec, [])
 
     assert [
              Plug.CowboyTest.HTTPS,
@@ -178,13 +172,19 @@ defmodule Plug.CowboyTest do
   end
 
   test "builds child specs" do
+    ranch_listener_mod = ranch_listener_for_version()
+
     assert %{
-             id: {:ranch_listener_sup, Plug.CowboyTest.HTTP},
-             modules: [:ranch_listener_sup],
-             start: {:ranch_listener_sup, :start_link, _},
-             restart: :permanent,
-             shutdown: :infinity,
+             id: {^ranch_listener_mod, Plug.CowboyTest.HTTP},
+             start: {^ranch_listener_mod, :start_link, _},
              type: :supervisor
            } = child_spec(scheme: :http, plug: __MODULE__, options: [])
+  end
+
+  defp ranch_listener_for_version() do
+    case Version.parse!("#{Application.spec(:ranch, :vsn)}") |> Version.compare("2.2.0") do
+      :lt -> :ranch_listener_sup
+      _ -> :ranch_embedded_sup
+    end
   end
 end
