@@ -288,12 +288,21 @@ defmodule Plug.Cowboy do
         :https ->
           %{socket_opts: socket_opts} = transport_opts
 
-          socket_opts =
-            socket_opts
-            |> Keyword.put_new(:next_protocols_advertised, ["h2", "http/1.1"])
-            |> Keyword.put_new(:alpn_preferred_protocols, ["h2", "http/1.1"])
+          updated_opts =
+            if socket_opts[:versions] == [:"tlsv1.3"] do
+              # next_protocols_advertised and alpn_preferred_protocols options are not supported
+              # by the OTP SSL module when earlier version of TLS are not being used.
+              # (i.e. TLS1.2 or earlier versions must be specified as it's not supported in TLS1.3)
+              socket_opts
+              |> Keyword.delete(:next_protocols_advertised)
+              |> Keyword.delete(:alpn_preferred_protocols)
+            else
+              socket_opts
+              |> Keyword.put_new(:next_protocols_advertised, ["h2", "http/1.1"])
+              |> Keyword.put_new(:alpn_preferred_protocols, ["h2", "http/1.1"])
+            end
 
-          {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: socket_opts}}
+          {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: updated_opts}}
       end
 
     case :ranch.child_spec(ref, ranch_module, transport_opts, cowboy_protocol, proto_opts) do
