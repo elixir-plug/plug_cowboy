@@ -45,8 +45,9 @@ jobs:
         if: ${{ matrix.lint }}
 
       - run: mix test
+
   test_cowboy_latest:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       MIX_ENV: test
     strategy:
@@ -56,8 +57,8 @@ jobs:
 
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: 24.2.2
-          elixir-version: 1.13.3
+          otp-version: 27.3
+          elixir-version: 1.17
 
       - run: mix deps.unlock cowboy cowlib ranch && mix deps.get --only test
 
