@@ -2,7 +2,7 @@ defmodule Plug.Cowboy.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/elixir-plug/plug_cowboy"
-  @version "2.7.3"
+  @version "2.7.4"
   @description "A Plug adapter for Cowboy"
 
   def project do
