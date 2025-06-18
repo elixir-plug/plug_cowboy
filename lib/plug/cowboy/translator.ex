@@ -51,9 +51,16 @@ defmodule Plug.Cowboy.Translator do
         | Exception.format(:exit, reason, [])
       ]
 
+      crash_reason =
+        case reason do
+          {exception, _stack} when is_exception(exception) -> reason
+          {{:nocatch, _value}, _stack} -> reason
+          exit_reason -> {exit_reason, []}
+        end
+
       metadata =
         [
-          crash_reason: reason,
+          crash_reason: crash_reason,
           domain: [:cowboy]
         ] ++ maybe_conn_metadata(conn)
 
