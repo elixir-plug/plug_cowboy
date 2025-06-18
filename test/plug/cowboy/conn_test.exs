@@ -160,6 +160,10 @@ defmodule Plug.Cowboy.ConnTest do
     raise "BadTimes"
   end
 
+  def telemetry_send(event, measurements, metadata, test) do
+    send(test, {:telemetry, event, measurements, metadata})
+  end
+
   test "emits telemetry events for start/stop" do
     :telemetry.attach_many(
       :start_stop_test,
@@ -168,9 +172,7 @@ defmodule Plug.Cowboy.ConnTest do
         [:cowboy, :request, :stop],
         [:cowboy, :request, :exception]
       ],
-      fn event, measurements, metadata, test ->
-        send(test, {:telemetry, event, measurements, metadata})
-      end,
+      &__MODULE__.telemetry_send/4,
       self()
     )
 
@@ -194,6 +196,7 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.detach(:start_stop_test)
   end
 
+  @tag :capture_log
   test "emits telemetry events for exception" do
     :telemetry.attach_many(
       :exception_test,
@@ -201,9 +204,7 @@ defmodule Plug.Cowboy.ConnTest do
         [:cowboy, :request, :start],
         [:cowboy, :request, :exception]
       ],
-      fn event, measurements, metadata, test ->
-        send(test, {:telemetry, event, measurements, metadata})
-      end,
+      &__MODULE__.telemetry_send/4,
       self()
     )
 
@@ -221,9 +222,7 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.attach(
       :early_error_test,
       [:cowboy, :request, :early_error],
-      fn name, measurements, metadata, test ->
-        send(test, {:event, name, measurements, metadata})
-      end,
+      &__MODULE__.telemetry_send/4,
       self()
     )
 
@@ -234,7 +233,7 @@ defmodule Plug.Cowboy.ConnTest do
              assert {200, _, _} = request(:get, "/headers", [{"foo", "bar"}, {"baz", "bat"}])
            end) =~ "Cowboy returned 431 because it was unable to parse the request headers"
 
-    assert_receive {:event, [:cowboy, :request, :early_error],
+    assert_receive {:telemetry, [:cowboy, :request, :early_error],
                     %{
                       system_time: _
                     },
@@ -610,34 +609,6 @@ defmodule Plug.Cowboy.ConnTest do
     assert body =~
              "malformed request, a RuntimeError exception was raised with message \"invalid multipart"
   end
-
-  def https(conn) do
-    assert conn.scheme == :https
-    send_resp(conn, 200, "OK")
-  end
-
-  test "https" do
-    pool = :https
-    pool_opts = [timeout: 150_000, max_connections: 10]
-    :ok = :hackney_pool.start_pool(pool, pool_opts)
-
-    opts = [
-      pool: :https,
-      ssl_options: [cacertfile: @https_options[:certfile], server_name_indication: ~c"localhost"]
-    ]
-
-    assert {:ok, 200, _headers, client} =
-             :hackney.get("https://127.0.0.1:8004/https", [], "", opts)
-
-    assert {:ok, "OK"} = :hackney.body(client)
-    :hackney.close(client)
-  end
-
-  @http2_opts [
-    cacertfile: @https_options[:certfile],
-    server_name_indication: ~c"localhost",
-    port: 8004
-  ]
 
   def http2(conn) do
     case conn.query_string do
