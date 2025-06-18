@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.4
+
+### Enhancements
+
+ * Ensure errors from Ranch are correctly translated
+
 ## v2.7.3
 
 ### Enhancements
