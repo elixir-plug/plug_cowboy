@@ -462,8 +462,7 @@ defmodule Plug.Cowboy do
   def handle_event(
         [:cowboy, :request, :early_error],
         _,
-        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req} =
-          meta,
+        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req},
         _
       ) do
     Logger.error("""
