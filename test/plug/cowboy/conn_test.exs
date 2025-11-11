@@ -254,10 +254,10 @@ defmodule Plug.Cowboy.ConnTest do
     )
 
     assert capture_log(fn ->
-              # Send a request line that's too long (exceeds max_request_line_length)
-              long_path = String.duplicate("a", 10_000)
-              response = request(:get, "/#{long_path}")
-              assert match?({414, _, _}, response) or match?({:error, :closed}, response)
+             # Send a request line that's too long (exceeds max_request_line_length)
+             long_path = String.duplicate("a", 10_000)
+             response = request(:get, "/#{long_path}")
+             assert match?({414, _, _}, response) or match?({:error, :closed}, response)
            end) =~ "Cowboy returned 414 because the request path was too long"
 
     assert_receive {:telemetry, [:cowboy, :request, :early_error],
