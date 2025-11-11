@@ -430,11 +430,15 @@ defmodule Plug.Cowboy do
 
   @doc false
   def handle_event(
-    [:cowboy, :request, :early_error],
-    _,
-    %{resp_status: 414, reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req},
-    _
-  ) do
+        [:cowboy, :request, :early_error],
+        _,
+        %{
+          resp_status: 414,
+          reason: {:connection_error, :limit_reached, specific_reason},
+          partial_req: partial_req
+        },
+        _
+      ) do
     Logger.error("""
     Cowboy returned 414 because the request path was too long.
 
@@ -458,7 +462,8 @@ defmodule Plug.Cowboy do
   def handle_event(
         [:cowboy, :request, :early_error],
         _,
-        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req} = meta,
+        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req} =
+          meta,
         _
       ) do
     Logger.error("""
