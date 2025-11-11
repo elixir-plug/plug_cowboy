@@ -430,9 +430,35 @@ defmodule Plug.Cowboy do
 
   @doc false
   def handle_event(
+    [:cowboy, :request, :early_error],
+    _,
+    %{resp_status: 414, reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req},
+    _
+  ) do
+    Logger.error("""
+    Cowboy returned 414 because the request path was too long.
+
+    The more specific reason is:
+
+        #{inspect(specific_reason)}
+
+    You can customize those limits when configuring your http/https
+    server. The configuration option and default values are shown below:
+
+        protocol_options: [
+          max_request_line_length: 50_000
+        ]
+
+    Request info:
+
+        peer: #{format_peer(partial_req.peer)}
+    """)
+  end
+
+  def handle_event(
         [:cowboy, :request, :early_error],
         _,
-        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req},
+        %{reason: {:connection_error, :limit_reached, specific_reason}, partial_req: partial_req} = meta,
         _
       ) do
     Logger.error("""

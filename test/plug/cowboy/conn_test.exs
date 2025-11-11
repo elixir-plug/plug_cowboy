@@ -245,6 +245,33 @@ defmodule Plug.Cowboy.ConnTest do
     :telemetry.detach(:early_error_test)
   end
 
+  test "emits telemetry events for cowboy early_error for paths that are too long" do
+    :telemetry.attach(
+      :early_error_test,
+      [:cowboy, :request, :early_error],
+      &__MODULE__.telemetry_send/4,
+      self()
+    )
+
+    assert capture_log(fn ->
+              # Send a request line that's too long (exceeds max_request_line_length)
+              long_path = String.duplicate("a", 10_000)
+              response = request(:get, "/#{long_path}")
+              assert match?({414, _, _}, response) or match?({:error, :closed}, response)
+           end) =~ "Cowboy returned 414 because the request path was too long"
+
+    assert_receive {:telemetry, [:cowboy, :request, :early_error],
+                    %{
+                      system_time: _
+                    },
+                    %{
+                      reason: {:connection_error, :limit_reached, _},
+                      partial_req: %{}
+                    }}
+
+    :telemetry.detach(:early_error_test)
+  end
+
   def send_200(conn) do
     assert conn.state == :unset
     assert conn.resp_body == nil
