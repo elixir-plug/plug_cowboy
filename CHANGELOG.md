@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.7.5
+
+### Enhancements
+
+ * Ensure path too large request errors are correctly translated
+
 ## v2.7.4
 
 ### Enhancements
