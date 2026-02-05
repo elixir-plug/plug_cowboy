@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.8.0
+
+### Enhancements
+
+ * Remove supported for deprecated `next_protocols_advertised`
+
 ## v2.7.5
 
 ### Enhancements
