@@ -290,7 +290,6 @@ defmodule Plug.Cowboy do
 
           socket_opts =
             socket_opts
-            |> Keyword.put_new(:next_protocols_advertised, ["h2", "http/1.1"])
             |> Keyword.put_new(:alpn_preferred_protocols, ["h2", "http/1.1"])
 
           {:ranch_ssl, :cowboy_tls, %{transport_opts | socket_opts: socket_opts}}

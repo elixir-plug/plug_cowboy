@@ -63,7 +63,6 @@ defmodule Plug.CowboyTest do
            ] = opts
 
     assert Keyword.get(socket_opts, :alpn_preferred_protocols) == ["h2", "http/1.1"]
-    assert Keyword.get(socket_opts, :next_protocols_advertised) == ["h2", "http/1.1"]
   end
 
   test "builds args for cowboy dispatch" do
