@@ -15,6 +15,12 @@ defmodule Plug.Cowboy.Conn do
       peer: {remote_ip, _}
     } = req
 
+    scheme =
+      case :cowboy_req.scheme(req) do
+        "http" -> :http
+        "https" -> :https
+      end
+
     %Plug.Conn{
       adapter: {__MODULE__, Map.put(req, :plug_pid, self())},
       host: host,
@@ -26,7 +32,7 @@ defmodule Plug.Cowboy.Conn do
       query_string: qs,
       req_headers: to_headers_list(headers),
       request_path: path,
-      scheme: String.to_atom(:cowboy_req.scheme(req))
+      scheme: scheme
     }
   end
 
