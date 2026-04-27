@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.8.1
+
+### Security fixes
+
+ * fix atom conversion from string (CVE-2026-32688)
+
 ## v2.8.0
 
 ### Enhancements
