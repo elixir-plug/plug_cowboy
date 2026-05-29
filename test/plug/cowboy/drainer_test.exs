@@ -25,7 +25,9 @@ defmodule Plug.Cowboy.DrainerTest do
     Process.register(self(), __MODULE__)
 
     # Supervisor and listener started
-    assert {:ok, pid} = start_link(refs: :all, shutdown: 1000, drain_check_interval: 10)
+    assert {:ok, pid} =
+             start_link(refs: [__MODULE__.HTTP], shutdown: 1000, drain_check_interval: 10)
+
     assert :running == get_status()
 
     # Start a request that will keep a connection open for a while

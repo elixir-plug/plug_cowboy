@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       MIX_ENV: test
     strategy:
@@ -16,14 +16,14 @@ jobs:
       matrix:
         include:
           - pair:
-              elixir: 1.14
-              otp: 24.2
+              elixir: "1.15"
+              otp: "25"
           - pair:
-              elixir: 1.17
-              otp: 27.3
+              elixir: "1.19"
+              otp: "29"
             lint: lint
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
 
       - uses: erlef/setup-beam@v1
         with:
@@ -47,18 +47,18 @@ jobs:
       - run: mix test
 
   test_cowboy_latest:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       MIX_ENV: test
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
 
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: 27.3
-          elixir-version: 1.17
+          otp-version: master
+          elixir-version: main
 
       - run: mix deps.unlock cowboy cowlib ranch && mix deps.get --only test
 
