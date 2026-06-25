@@ -682,6 +682,17 @@ defmodule Plug.Cowboy.ConnTest do
     :hackney.close(client)
   end
 
+  def sock_data(conn) do
+    %{address: address, port: port} = get_sock_data(conn)
+    assert address == {127, 0, 0, 1}
+    assert port == 8003
+    send_resp(conn, 200, "OK")
+  end
+
+  test "exposes sock data" do
+    assert {200, _, "OK"} = request(:get, "/sock_data")
+  end
+
   ## Helpers
 
   defp request(:head = verb, path) do

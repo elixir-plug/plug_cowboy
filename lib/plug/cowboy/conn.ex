@@ -141,6 +141,13 @@ defmodule Plug.Cowboy.Conn do
   end
 
   @impl true
+  def get_sock_data(req) do
+    {addr, port} = :cowboy_req.sock(req)
+
+    %{address: addr, port: port}
+  end
+
+  @impl true
   def get_http_protocol(req) do
     :cowboy_req.version(req)
   end
