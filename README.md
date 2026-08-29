@@ -4,7 +4,7 @@
 [![Build Status](https://github.com/elixir-plug/plug_cowboy/workflows/CI/badge.svg)](https://github.com/elixir-plug/plug_cowboy/actions?query=workflow%3ACI)
 
 A Plug Adapter for the Erlang [Cowboy](https://github.com/ninenines/cowboy
-) web server.
+) web server. See [its documentation](https://plug-cowboy.hexdocs.pm/).
 
 ## Installation
 
