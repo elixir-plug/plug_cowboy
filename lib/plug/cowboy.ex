@@ -43,18 +43,18 @@ defmodule Plug.Cowboy do
       see the [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
 
     * `:transport_options` - A keyword list specifying transport options,
-      see [Ranch docs](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch/).
+      see [Ranch docs](https://ninenines.eu/docs/en/ranch/2.2/manual/ranch/).
       By default `:num_acceptors` will be set to `100` and `:max_connections`
       to `16_384`.
 
   All other options given at the top level must configure the underlying
   socket. For HTTP connections, those options are listed under
-  [`ranch_tcp`](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch_tcp/).
+  [`ranch_tcp`](https://ninenines.eu/docs/en/ranch/2.2/manual/ranch_tcp/).
   For example, you can set `:ipv6_v6only` to true if you want to bind only
   on IPv6 addresses.
 
   For HTTPS (SSL) connections, those options are described in
-  [`ranch_ssl`](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch_ssl/).
+  [`ranch_ssl`](https://ninenines.eu/docs/en/ranch/2.2/manual/ranch_ssl/).
   See `https/3` for an example and read `Plug.SSL.configure/1` to
   understand about our SSL defaults.
 
