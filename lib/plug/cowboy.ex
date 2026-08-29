@@ -37,10 +37,10 @@ defmodule Plug.Cowboy do
       Defaults to `false`.
 
     * `:stream_handlers` - List of Cowboy `stream_handlers`,
-      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
+      see [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.18/manual/cowboy_http/).
 
     * `:protocol_options` - Specifies remaining protocol options,
-      see the [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
+      see the [Cowboy docs](https://ninenines.eu/docs/en/cowboy/2.18/manual/cowboy_http/).
 
     * `:transport_options` - A keyword list specifying transport options,
       see [Ranch docs](https://ninenines.eu/docs/en/ranch/1.7/manual/ranch/).
@@ -73,7 +73,7 @@ defmodule Plug.Cowboy do
   Keep in mind that increasing those limits can pose a security risk.
   Other times, browsers and proxies along the way may have equally strict
   limits, which means the request will still fail or the URL will be
-  pruned. You can [consult all limits here](https://ninenines.eu/docs/en/cowboy/2.12/manual/cowboy_http/).
+  pruned. You can [consult all limits here](https://ninenines.eu/docs/en/cowboy/2.18/manual/cowboy_http/).
 
   ## Loopback vs Public IP Addresses
 
@@ -155,12 +155,12 @@ defmodule Plug.Cowboy do
   connection_opts}`, where values are as follows:
 
   * `handler` is a module which implements the
-    [`:cowboy_websocket`](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/)
+    [`:cowboy_websocket`](https://ninenines.eu/docs/en/cowboy/2.18/manual/cowboy_websocket/)
     behaviour. Note that this module will NOT have its `c:cowboy_websocket.init/2` callback
     called; only the 'later' parts of the `:cowboy_websocket` lifecycle are supported
   * `handler_opts` is an arbitrary term which will be passed as the argument to
     `c:cowboy_websocket.websocket_init/1`
-  * `connection_opts` is a map with any of [Cowboy's websockets options](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/#_opts)
+  * `connection_opts` is a map with any of [Cowboy's websockets options](https://ninenines.eu/docs/en/cowboy/2.18/manual/cowboy_websocket/#_opts)
 
   """
 
