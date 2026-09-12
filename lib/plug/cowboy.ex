@@ -4,7 +4,8 @@ defmodule Plug.Cowboy do
 
   ## Options
 
-    * `:net` - if using `:inet` (IPv4 only, the default) or `:inet6` (IPv6).
+    * `:net` - if using `:inet` (IPv4 only, the default)
+      or `:inet6` (IPv6, also listens on IPv4 on Linux by default).
 
     * `:ip` - the IP to bind the server to. Must be one of:
 
